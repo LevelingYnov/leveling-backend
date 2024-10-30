@@ -1,0 +1,19 @@
+{
+  "name": "leveling-backend",
+  "version": "1.0.0",
+  "description": "leveling-backend",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LevelingYnov/leveling-backend.git"
+  },
+  "author": "ydays-leveling-group",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LevelingYnov/leveling-backend/issues"
+  },
+  "homepage": "https://github.com/LevelingYnov/leveling-backend#readme"
+}
