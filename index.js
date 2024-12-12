@@ -14,5 +14,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(port, hostname, () => {
-  console.log(`Le serveur tourne à l'adresse https://${hostname}:${port}/`);
+  console.log(`Le serveur tourne à l'adresse http://${hostname}:${port}/`);
 });
