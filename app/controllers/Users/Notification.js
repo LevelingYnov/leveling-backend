@@ -20,7 +20,7 @@ exports.getNotificationsByUserId = async (req, res) => {
         res.status(500).json({ message: 'Erreur lors de la récupération des notifications de l\'utilisateur.', error });
     }
 };
-
+/*
 // Créer une nouvelle notification
 exports.createNotification = async (req, res) => {
     const { user_id, event_id, texte, notification_type, is_read } = req.body;
@@ -82,4 +82,4 @@ exports.deleteNotification = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: 'Erreur lors de la suppression de la notification.', error });
     }
-};
+};*/
