@@ -3,13 +3,13 @@ const { DataTypes } = require('sequelize');
 module.exports = (sequelize) => {
     return sequelize.define('Class', {
         name: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
             allowNull: false,
             validate: {
                 notNull: { msg: 'Le nom est obligatoire.' }
             }
         },
-        description: DataTypes.TEXT
+        description: DataTypes.STRING
     }, {
         tableName: 'Classes',
         timestamps: false

@@ -15,7 +15,7 @@ module.exports = {
                 allowNull: false
             },
             event_type: {
-                type: Sequelize.TEXT,
+                type: Sequelize.STRING,
                 allowNull: true,
                 validate: {
                     isIn: [['MISSION_STARTED', 'MISSION_COMPLETED', 'REMINDER']]

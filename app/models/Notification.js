@@ -10,18 +10,18 @@ module.exports = (sequelize) => {
             }
         },
         event_id: DataTypes.INTEGER,
-        texte: {
-            type: DataTypes.TEXT,
+        STRINGe: {
+            type: DataTypes.STRING,
             allowNull: false,
             validate: {
-                notNull: { msg: 'Le texte est obligatoire.' }
+                notNull: { msg: 'Le STRINGe est obligatoire.' }
             }
         },
         notification_type: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
             defaultValue: 'MISSION',
             validate: {
-                isIn: { args: [['MISSION', 'REMINDER', 'SYSTEM', 'EVENT']], msg: 'Le type de notification doit être valide.' }
+                isIn: { args: [['MISSION', 'REMINDER', 'SYSTEM', 'EVENT']], msg: 'Le type de notification doit ï¿½tre valide.' }
             }
         },
         is_read: {

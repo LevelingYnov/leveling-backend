@@ -3,7 +3,7 @@ const { DataTypes } = require('sequelize');
 module.exports = (sequelize) => {
     return sequelize.define('Difficulty', {
         name: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
             allowNull: false,
             unique: true,
             validate: {
@@ -15,7 +15,7 @@ module.exports = (sequelize) => {
             allowNull: false,
             validate: {
                 notNull: { msg: 'Le multiplicateur est obligatoire.' },
-                isInt: { msg: 'Le multiplicateur doit être un entier.' }
+                isInt: { msg: 'Le multiplicateur doit ï¿½tre un entier.' }
             }
         }
     }, {

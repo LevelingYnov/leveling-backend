@@ -35,7 +35,7 @@ module.exports = {
                 allowNull: true
             },
             status: {
-                type: Sequelize.TEXT,
+                type: Sequelize.STRING,
                 allowNull: true,
                 validate: {
                     isIn: [['PASSED', 'FAILED']]

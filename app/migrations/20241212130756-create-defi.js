@@ -11,11 +11,11 @@ module.exports = {
                 type: Sequelize.INTEGER
             },
             code_user: {
-                type: Sequelize.TEXT,
+                type: Sequelize.STRING,
                 allowNull: false
             },
             code_user2: {
-                type: Sequelize.TEXT,
+                type: Sequelize.STRING,
                 allowNull: false
             },
             winner: {

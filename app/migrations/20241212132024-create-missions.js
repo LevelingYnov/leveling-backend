@@ -11,15 +11,15 @@ module.exports = {
                 type: Sequelize.INTEGER
             },
             name: {
-                type: Sequelize.TEXT,
+                type: Sequelize.STRING,
                 allowNull: false
             },
             description: {
-                type: Sequelize.TEXT,
+                type: Sequelize.STRING,
                 allowNull: true
             },
             status: {
-                type: Sequelize.TEXT,
+                type: Sequelize.STRING,
                 allowNull: true,
                 validate: {
                     isIn: [['quest', 'penality', 'exo', 'defi']]

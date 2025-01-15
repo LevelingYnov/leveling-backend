@@ -3,17 +3,17 @@ const { DataTypes } = require('sequelize');
 module.exports = (sequelize) => {
     return sequelize.define('Mission', {
         name: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
             allowNull: false,
             validate: {
                 notNull: { msg: 'Le nom est obligatoire.' }
             }
         },
-        description: DataTypes.TEXT,
+        description: DataTypes.STRING,
         status: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
             validate: {
-                isIn: { args: [['quest', 'penality', 'exo', 'defi']], msg: 'Le statut doit être quest, penality, exo ou defi.' }
+                isIn: { args: [['quest', 'penality', 'exo', 'defi']], msg: 'Le statut doit ï¿½tre quest, penality, exo ou defi.' }
             }
         },
         points: {
@@ -21,7 +21,7 @@ module.exports = (sequelize) => {
             allowNull: false,
             validate: {
                 notNull: { msg: 'Les points sont obligatoires.' },
-                isInt: { msg: 'Les points doivent être un entier.' }
+                isInt: { msg: 'Les points doivent ï¿½tre un entier.' }
             }
         }
     }, {

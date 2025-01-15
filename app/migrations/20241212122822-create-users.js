@@ -11,16 +11,16 @@ module.exports = {
                 type: Sequelize.INTEGER
             },
             email: {
-                type: Sequelize.TEXT,
+                type: Sequelize.STRING,
                 allowNull: false,
                 unique: true
             },
             username: {
-                type: Sequelize.TEXT,
+                type: Sequelize.STRING,
                 allowNull: false
             },
             password: {
-                type: Sequelize.TEXT,
+                type: Sequelize.STRING,
                 allowNull: false
             },
             registration_date: {
@@ -28,7 +28,7 @@ module.exports = {
                 defaultValue: Sequelize.NOW
             },
             avatar: {
-                type: Sequelize.TEXT,
+                type: Sequelize.STRING,
                 allowNull: true
             },
             poids: {
@@ -40,7 +40,7 @@ module.exports = {
                 allowNull: true
             },
             experience: {
-                type: Sequelize.TEXT,
+                type: Sequelize.STRING,
                 allowNull: true,
                 validate: {
                     isIn: [['BEGINNER', 'INTERMEDIATE', 'EXPERT']]
@@ -51,7 +51,7 @@ module.exports = {
                 defaultValue: 0
             },
             abonnement: {
-                type: Sequelize.TEXT,
+                type: Sequelize.STRING,
                 allowNull: true,
                 defaultValue: 'FREE',
                 validate: {

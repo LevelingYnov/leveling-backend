@@ -10,9 +10,9 @@ module.exports = (sequelize) => {
             }
         },
         event_type: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
             validate: {
-                isIn: { args: [['MISSION_STARTED', 'MISSION_COMPLETED', 'REMINDER']], msg: 'Le type d\'événement doit être valide.' }
+                isIn: { args: [['MISSION_STARTED', 'MISSION_COMPLETED', 'REMINDER']], msg: 'Le type d\'ï¿½vï¿½nement doit ï¿½tre valide.' }
             }
         },
         created_at: {

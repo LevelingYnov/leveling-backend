@@ -30,12 +30,12 @@ module.exports = {
                 onUpdate: 'CASCADE',
                 onDelete: 'SET NULL'
             },
-            texte: {
-                type: Sequelize.TEXT,
+            STRINGe: {
+                type: Sequelize.STRING,
                 allowNull: false
             },
             notification_type: {
-                type: Sequelize.TEXT,
+                type: Sequelize.STRING,
                 allowNull: false,
                 defaultValue: 'MISSION',
                 validate: {

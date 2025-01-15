@@ -3,7 +3,7 @@ const { DataTypes } = require('sequelize');
 module.exports = (sequelize) => {
     return sequelize.define('Pallier', {
         name: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
             allowNull: false,
             validate: {
                 notNull: { msg: 'Le nom est obligatoire.' }
@@ -14,7 +14,7 @@ module.exports = (sequelize) => {
             allowNull: false,
             validate: {
                 notNull: { msg: 'Le point pallier est obligatoire.' },
-                isInt: { msg: 'Le point pallier doit être un entier.' }
+                isInt: { msg: 'Le point pallier doit ï¿½tre un entier.' }
             }
         }
     }, {

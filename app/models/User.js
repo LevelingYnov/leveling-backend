@@ -3,40 +3,40 @@ const { DataTypes } = require('sequelize');
 module.exports = (sequelize) => {
     return sequelize.define('User', {
         email: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
             allowNull: false,
             unique: true,
             validate: {
-                isEmail: { msg: 'L\'adresse email doit être valide.' },
+                isEmail: { msg: 'L\'adresse email doit ï¿½tre valide.' },
                 notNull: { msg: 'L\'email est obligatoire.' }
             }
         },
         username: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
             allowNull: false,
             validate: {
                 notNull: { msg: 'Le nom d\'utilisateur est obligatoire.' }
             }
         },
         password: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
             allowNull: false,
             validate: {
                 notNull: { msg: 'Le mot de passe est obligatoire.' },
-                len: { args: [8, 128], msg: 'Le mot de passe doit contenir entre 8 et 128 caractères.' }
+                len: { args: [8, 128], msg: 'Le mot de passe doit contenir entre 8 et 128 caractï¿½res.' }
             }
         },
         registration_date: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW
         },
-        avatar: DataTypes.TEXT,
+        avatar: DataTypes.STRING,
         poids: DataTypes.INTEGER,
         taille: DataTypes.INTEGER,
         experience: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
             validate: {
-                isIn: { args: [['BEGINNER', 'INTERMEDIATE', 'EXPERT']], msg: 'L\'expérience doit être BEGINNER, INTERMEDIATE ou EXPERT.' }
+                isIn: { args: [['BEGINNER', 'INTERMEDIATE', 'EXPERT']], msg: 'L\'expï¿½rience doit ï¿½tre BEGINNER, INTERMEDIATE ou EXPERT.' }
             }
         },
         points: {
@@ -44,10 +44,10 @@ module.exports = (sequelize) => {
             defaultValue: 0
         },
         abonnement: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
             defaultValue: 'FREE',
             validate: {
-                isIn: { args: [['FREE', 'PREMIUM']], msg: 'L\'abonnement doit être FREE ou PREMIUM.' }
+                isIn: { args: [['FREE', 'PREMIUM']], msg: 'L\'abonnement doit ï¿½tre FREE ou PREMIUM.' }
             }
         },
         role: {
@@ -55,7 +55,7 @@ module.exports = (sequelize) => {
             allowNull: false,
             defaultValue: 'User',
             validate: {
-                isIn: { args: [['User', 'Admin', 'SuperAdmin']], msg: 'Le rôle doit être User, Admin ou SuperAdmin.' }
+                isIn: { args: [['User', 'Admin', 'SuperAdmin']], msg: 'Le rï¿½le doit ï¿½tre User, Admin ou SuperAdmin.' }
             }
         }
     }, {

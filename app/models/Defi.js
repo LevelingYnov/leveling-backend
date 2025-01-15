@@ -3,17 +3,17 @@ const { DataTypes } = require('sequelize');
 module.exports = (sequelize) => {
     return sequelize.define('Defi', {
         code_user: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
             allowNull: false,
             validate: {
                 notNull: { msg: 'Le code utilisateur est obligatoire.' }
             }
         },
         code_user2: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
             allowNull: false,
             validate: {
-                notNull: { msg: 'Le code du deuxième utilisateur est obligatoire.' }
+                notNull: { msg: 'Le code du deuxiï¿½me utilisateur est obligatoire.' }
             }
         },
         winner: DataTypes.INTEGER,
@@ -21,7 +21,7 @@ module.exports = (sequelize) => {
             type: DataTypes.INTEGER,
             allowNull: false,
             validate: {
-                notNull: { msg: 'La relation défi-utilisateur est obligatoire.' }
+                notNull: { msg: 'La relation dï¿½fi-utilisateur est obligatoire.' }
             }
         }
     }, {

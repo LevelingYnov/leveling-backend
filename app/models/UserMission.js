@@ -18,9 +18,9 @@ module.exports = (sequelize) => {
         },
         starttime: DataTypes.DATE,
         status: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
             validate: {
-                isIn: { args: [['PASSED', 'FAILED']], msg: 'Le statut doit être PASSED ou FAILED.' }
+                isIn: { args: [['PASSED', 'FAILED']], msg: 'Le statut doit ï¿½tre PASSED ou FAILED.' }
             }
         }
     }, {
