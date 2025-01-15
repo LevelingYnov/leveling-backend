@@ -16,7 +16,7 @@ module.exports = {
         database: DB_DATABASE,
         host: DB_HOST,
         dialect: DB_DIALECT,
-        storage: './leveling.sqlite',
+        storage: '../leveling.sqlite',
         port: DB_PORT,
         logging: console.log 
     },
@@ -26,7 +26,7 @@ module.exports = {
         database: DB_DATABASE,
         host: DB_HOST,
         dialect: DB_DIALECT,
-        storage: './leveling.sqlite',
+        storage: '../leveling.sqlite',
         port: DB_PORT
     },
     production: {
@@ -35,7 +35,7 @@ module.exports = {
         database: DB_DATABASE,
         host: DB_HOST,
         dialect: DB_DIALECT,
-        storage: './leveling.sqlite',
+        storage: '../leveling.sqlite',
         port: DB_PORT
     }
 };
