@@ -1,4 +1,4 @@
-const { Mission } = require('../models'); // Assurez-vous que le modèle est bien importé
+const { Mission } = require('../../models'); // Assurez-vous que le modèle est bien importé
 
 // Récupérer toutes les missions
 exports.getAllMissions = async (req, res) => {

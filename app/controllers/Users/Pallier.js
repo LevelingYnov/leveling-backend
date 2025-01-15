@@ -1,4 +1,4 @@
-const { Pallier } = require('../models'); // Assurez-vous que le modèle est correctement importé
+const { Pallier } = require('../../models'); // Assurez-vous que le modèle est correctement importé
 
 // Récupérer tous les palliers
 exports.getAllPalliers = async (req, res) => {

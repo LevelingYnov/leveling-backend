@@ -1,4 +1,4 @@
-const { Item } = require('../models'); // Assurez-vous que le modèle Item est correctement importé
+const { Item } = require('../../models'); // Assurez-vous que le modèle Item est correctement importé
 
 // Récupérer tous les items
 exports.getAllItems = async (req, res) => {

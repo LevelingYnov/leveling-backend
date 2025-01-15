@@ -1,4 +1,4 @@
-const { UserClass } = require('../models'); // Assurez-vous que le modèle est correctement importé
+const { UserClass } = require('../../models'); // Assurez-vous que le modèle est correctement importé
 
 // Récupérer toutes les associations Utilisateur-Classe
 exports.getAllUserClasses = async (req, res) => {

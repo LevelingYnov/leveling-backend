@@ -1,4 +1,4 @@
-const { UserMission } = require('../models'); // Assurez-vous que le modèle est correctement importé
+const { UserMission } = require('../../models'); // Assurez-vous que le modèle est correctement importé
 
 // Récupérer toutes les missions des utilisateurs
 exports.getAllUserMissions = async (req, res) => {

@@ -1,4 +1,4 @@
-const { MissionsDifficulty } = require('../models'); // Assurez-vous que le modèle est correctement importé
+const { MissionsDifficulty } = require('../../models'); // Assurez-vous que le modèle est correctement importé
 
 // Récupérer toutes les relations Missions-Difficulty
 exports.getAllMissionsDifficulties = async (req, res) => {

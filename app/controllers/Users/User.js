@@ -1,4 +1,4 @@
-const { User } = require('../models'); // Assurez-vous que le modèle est correctement importé
+const { User } = require('../../models'); // Assurez-vous que le modèle est correctement importé
 
 // Récupérer tous les utilisateurs
 exports.getAllUsers = async (req, res) => {

@@ -1,4 +1,4 @@
-const { PallierUsers } = require('../models'); // Assurez-vous que le modèle est correctement importé
+const { PallierUsers } = require('../../models'); // Assurez-vous que le modèle est correctement importé
 
 // Récupérer toutes les associations Pallier-Utilisateur
 exports.getAllPallierUsers = async (req, res) => {
