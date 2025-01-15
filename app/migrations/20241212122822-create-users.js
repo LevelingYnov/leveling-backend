@@ -58,6 +58,11 @@ module.exports = {
                     isIn: [['FREE', 'PREMIUM']]
                 }
             },
+            role: {
+                type: Sequelize.ENUM('User', 'Admin', 'SuperAdmin'),
+                allowNull: false,
+                defaultValue: 'User'
+            },
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE,
