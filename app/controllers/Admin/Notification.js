@@ -37,7 +37,7 @@ exports.createNotification = async (req, res) => {
         res.status(400).json({ message: 'Erreur lors de la création de la notification.', error });
     }
 };
-
+/*
 // Mettre à jour une notification existante
 exports.updateNotification = async (req, res) => {
     const { id } = req.params;
@@ -82,4 +82,4 @@ exports.deleteNotification = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: 'Erreur lors de la suppression de la notification.', error });
     }
-};
+};*/
