@@ -49,6 +49,14 @@ module.exports = (sequelize) => {
             validate: {
                 isIn: { args: [['FREE', 'PREMIUM']], msg: 'L\'abonnement doit être FREE ou PREMIUM.' }
             }
+        },
+        role: {
+            type: DataTypes.ENUM('User', 'Admin', 'SuperAdmin'),
+            allowNull: false,
+            defaultValue: 'User',
+            validate: {
+                isIn: { args: [['User', 'Admin', 'SuperAdmin']], msg: 'Le rôle doit être User, Admin ou SuperAdmin.' }
+            }
         }
     }, {
         tableName: 'Users',
