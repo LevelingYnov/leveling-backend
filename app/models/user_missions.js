@@ -1,7 +1,14 @@
-const { DataTypes } = require('sequelize');
 
-module.exports = (sequelize) => {
-    return sequelize.define('UserMission', {
+'use strict';
+const { Model } = require('sequelize');
+
+module.exports = (sequelize, DataTypes) => {
+    class UserMission extends Model {
+        static associate() {
+            // Ajouter des associations ici si nécessaire
+        }
+    }
+    UserMission.init({
         fk_users: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -24,7 +31,8 @@ module.exports = (sequelize) => {
             }
         }
     }, {
-        tableName: 'User_Missions',
-        timestamps: false
+        sequelize,
+        modelName: 'UserMission',
+        tableName: 'user_missions'
     });
 };

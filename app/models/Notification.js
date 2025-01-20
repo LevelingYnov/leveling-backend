@@ -1,7 +1,13 @@
-const { DataTypes } = require('sequelize');
+'use strict';
+const { Model } = require('sequelize');
 
-module.exports = (sequelize) => {
-    return sequelize.define('Notification', {
+module.exports = (sequelize, DataTypes) => {
+    class Notification extends Model {
+        static associate() {
+            // Ajouter des associations ici si nécessaire
+        }
+    }
+    Notification.init({
         user_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -10,7 +16,7 @@ module.exports = (sequelize) => {
             }
         },
         event_id: DataTypes.INTEGER,
-        STRINGe: {
+        STRING: {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
@@ -33,7 +39,8 @@ module.exports = (sequelize) => {
             defaultValue: DataTypes.NOW
         }
     }, {
-        tableName: 'Notifications',
-        timestamps: false
+        sequelize,
+        modelName: 'Notifications',
+        tableName: 'notifications'
     });
 };

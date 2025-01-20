@@ -1,7 +1,13 @@
-const { DataTypes } = require('sequelize');
+'use strict';
+const { Model } = require('sequelize');
 
-module.exports = (sequelize) => {
-    return sequelize.define('Event', {
+module.exports = (sequelize, DataTypes) => {
+    class Events extends Model {
+        static associate() {
+            // Ajouter des associations ici si nécessaire
+        }
+    }
+    Events.init({
         id_missions: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -20,7 +26,8 @@ module.exports = (sequelize) => {
             defaultValue: DataTypes.NOW
         }
     }, {
-        tableName: 'Events',
-        timestamps: false
+        sequelize,
+        modelName: 'Events',
+        tableName: 'events'
     });
 };

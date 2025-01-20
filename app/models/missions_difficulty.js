@@ -2,30 +2,29 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class Classement extends Model {
+    class MissionsDifficulty extends Model {
         static associate() {
             // Ajouter des associations ici si nécessaire
         }
     }
-    Classement.init({
-        number: {
+    MissionsDifficulty.init({
+        fk_missions: {
             type: DataTypes.INTEGER,
             allowNull: false,
             validate: {
-                notNull: { msg: 'Le num�ro est obligatoire.' },
-                isInt: { msg: 'Le num�ro doit �tre un entier.' }
+                notNull: { msg: 'La mission est obligatoire.' }
             }
         },
-        fk_user: {
+        fk_difficulty: {
             type: DataTypes.INTEGER,
             allowNull: false,
             validate: {
-                notNull: { msg: 'L\'utilisateur est obligatoire.' }
+                notNull: { msg: 'La difficult� est obligatoire.' }
             }
         }
     }, {
         sequelize,
-        modelName: 'Classement',
-        tableName: 'classement'
+        modelName: 'MissionsDifficulty',
+        tableName: 'missions_difficulty'
     });
 };

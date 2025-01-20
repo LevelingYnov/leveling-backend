@@ -1,7 +1,13 @@
-const { DataTypes } = require('sequelize');
+'use strict';
+const { Model } = require('sequelize');
 
-module.exports = (sequelize) => {
-    return sequelize.define('Difficulty', {
+module.exports = (sequelize, DataTypes) => {
+    class Difficulty extends Model {
+        static associate() {
+            // Ajouter des associations ici si nécessaire
+        }
+    }
+    Difficulty.init({
         name: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -19,7 +25,8 @@ module.exports = (sequelize) => {
             }
         }
     }, {
-        tableName: 'Difficulty',
-        timestamps: false
+        sequelize,
+        modelName: 'Difficulty',
+        tableName: 'difficulty'
     });
 };

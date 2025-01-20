@@ -1,7 +1,14 @@
-const { DataTypes } = require('sequelize');
+'use strict';
+const { Model } = require('sequelize');
+const bcrypt = require('bcrypt');
 
-module.exports = (sequelize) => {
-    return sequelize.define('User', {
+module.exports = (sequelize, DataTypes) => {
+    class Users extends Model {
+        static associate() {
+            // Ajouter des associations ici si nécessaire
+        }
+    }
+    Users.init({
         email: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -59,7 +66,39 @@ module.exports = (sequelize) => {
             }
         }
     }, {
-        tableName: 'Users',
-        timestamps: false
+        sequelize,
+        modelName: 'Users',
+        tableName: 'users',
+        hooks: {
+            beforeCreate: async (user) => {
+                // Normalize the email
+                user.email = normalizeEmail(user.email);
+
+                if (user.password) {
+                    user.password = await bcrypt.hash(user.password, 10);
+                }
+                if (user.changed('username')) {
+                    const existingUser = await User.findOne({ where: { username: user.username } });
+                    if (existingUser) {
+                        throw new Error("Ce nom d'utilisateur est déjà utilisé");
+                    }
+                }
+                if (user.changed('email')) {
+                    const existingEmail = await User.findOne({ where: { email: user.email } });
+                    if (existingEmail) {
+                        throw new Error("L'adresse email est déjà utilisé");
+                    }
+                }
+            },
+        }
     });
+    // Function to normalize Gmail addresses
+    function normalizeEmail(email) {
+        const [localPart, domainPart] = email.split('@');
+        if (domainPart.toLowerCase() === 'gmail.com') {
+            return localPart.replace(/\./g, '') + '@' + domainPart;
+        }
+        return email;
+    }
+    return Users;
 };

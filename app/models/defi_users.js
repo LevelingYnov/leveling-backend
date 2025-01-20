@@ -1,7 +1,13 @@
-const { DataTypes } = require('sequelize');
+'use strict';
+const { Model } = require('sequelize');
 
-module.exports = (sequelize) => {
-    return sequelize.define('DefiUsers', {
+module.exports = (sequelize, DataTypes) => {
+    class DefiUsers extends Model {
+        static associate() {
+            // Ajouter des associations ici si nÃ©cessaire
+        }
+    }
+    DefiUsers.init({
         fk_user: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -13,7 +19,7 @@ module.exports = (sequelize) => {
             type: DataTypes.INTEGER,
             allowNull: false,
             validate: {
-                notNull: { msg: 'Le deuxième utilisateur est obligatoire.' }
+                notNull: { msg: 'Le deuxiï¿½me utilisateur est obligatoire.' }
             }
         },
         fk_missions: {
@@ -24,7 +30,8 @@ module.exports = (sequelize) => {
             }
         }
     }, {
-        tableName: 'Defi_Users',
-        timestamps: false
+        sequelize,
+        modelName: 'DefiUsers',
+        tableName: 'defi_users'
     });
 };

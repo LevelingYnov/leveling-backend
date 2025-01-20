@@ -1,7 +1,13 @@
-const { DataTypes } = require('sequelize');
+'use strict';
+const { Model } = require('sequelize');
 
-module.exports = (sequelize) => {
-    return sequelize.define('Inventory', {
+module.exports = (sequelize, DataTypes) => {
+    class Inventories extends Model {
+        static associate() {
+            // Ajouter des associations ici si nécessaire
+        }
+    }
+    Inventories.init({
         fk_items: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -17,7 +23,8 @@ module.exports = (sequelize) => {
             }
         }
     }, {
-        tableName: 'Inventories',
-        timestamps: false
+        sequelize,
+        modelName: 'Inventories',
+        tableName: 'inventories'
     });
 };
