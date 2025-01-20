@@ -3,45 +3,39 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('defis', {
+        await queryInterface.createTable('defi_users', {
             id: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
             },
-            code_user: {
-                type: Sequelize.STRING,
-                allowNull: false,
-                validate: {
-                    notNull: true,
-                    notEmpty: true,
-                },
-            },
-            code_user2: {
-                type: Sequelize.STRING,
-                allowNull: false,
-                validate: {
-                    notNull: true,
-                    notEmpty: true,
-                },
-            },
-            winner: {
-                type: Sequelize.INTEGER,
-                allowNull: true,
-                validate: {
-                    isInt: true,
-                    min: 1,
-                    max: 2,
-                    isIn: [[1, 2]],
-                },
-            },
-            fk_defi_users: {
+            fk_user: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 references: {
                     model: 'users', // Table 'users'
                     key: 'id', // Clé primaire de la table 'users'
+                },
+                onUpdate: 'CASCADE',
+                onDelete: 'CASCADE',
+            },
+            fk_user2: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'users', // Table 'users'
+                    key: 'id', // Clé primaire de la table 'users'
+                },
+                onUpdate: 'CASCADE',
+                onDelete: 'CASCADE',
+            },
+            fk_missions: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'missions', // Table 'missions'
+                    key: 'id', // Clé primaire de la table 'missions'
                 },
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE',
@@ -60,6 +54,6 @@ module.exports = {
     },
 
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('defis');
+        await queryInterface.dropTable('defi_users');
     }
 };

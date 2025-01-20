@@ -1,17 +1,23 @@
 
 'use strict';
 const { Model } = require('sequelize');
+const user_classes = require('./user_classes');
 
 module.exports = (sequelize, DataTypes) => {
     class UserMission extends Model {
-        static associate() {
-            // Ajouter des associations ici si nécessaire
+        static associate(models) {
+            UserMission.belongsTo(models.User, { foreignKey: 'fk_users', as: 'user' });
+            UserMission.belongsTo(models.Mission, { foreignKey: 'fk_missions', as: 'mission' });
         }
     }
     UserMission.init({
         fk_users: {
             type: DataTypes.INTEGER,
             allowNull: false,
+            references: {
+                model: 'users',
+                key: 'id'
+            },
             validate: {
                 notNull: { msg: 'L\'utilisateur est obligatoire.' }
             }
@@ -19,6 +25,10 @@ module.exports = (sequelize, DataTypes) => {
         fk_missions: {
             type: DataTypes.INTEGER,
             allowNull: false,
+            references: {
+                model: 'missions',
+                key: 'id'
+            },
             validate: {
                 notNull: { msg: 'La mission est obligatoire.' }
             }
@@ -27,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
         status: {
             type: DataTypes.STRING,
             validate: {
-                isIn: { args: [['PASSED', 'FAILED']], msg: 'Le statut doit �tre PASSED ou FAILED.' }
+                isIn: { args: [['PASSED', 'FAILED']], msg: 'Le statut doit être PASSED ou FAILED.' }
             }
         }
     }, {
@@ -35,4 +45,6 @@ module.exports = (sequelize, DataTypes) => {
         modelName: 'UserMission',
         tableName: 'user_missions'
     });
+
+    return UserMission;
 };

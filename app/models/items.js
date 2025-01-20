@@ -2,12 +2,12 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class Items extends Model {
+    class Item extends Model {
         static associate() {
             // Ajouter des associations ici si nécessaire
         }
     }
-    Items.init({
+    Item.init({
         name: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -20,12 +20,14 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             validate: {
                 notNull: { msg: 'Le bonus est obligatoire.' },
-                isInt: { msg: 'Le bonus doit �tre un entier.' }
+                isInt: { msg: 'Le bonus doit être un entier.' }
             }
         }
     }, {
         sequelize,
-        modelName: 'Items',
+        modelName: 'Item',
         tableName: 'items'
     });
+
+    return Item;
 };

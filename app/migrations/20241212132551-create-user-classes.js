@@ -3,40 +3,42 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('UserClasses', {
+        await queryInterface.createTable('user_classes', {
             id: {
+                type: Sequelize.INTEGER,
                 allowNull: false,
                 autoIncrement: true,
-                primaryKey: true,
-                type: Sequelize.INTEGER
+                primaryKey: true
             },
             fk_users: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'Users', // Nom de la table Users
+                    model: 'users',
                     key: 'id'
                 },
-                onUpdate: 'CASCADE',
-                onDelete: 'CASCADE'
+                onDelete: 'CASCADE',
+                validate: {
+                    notNull: { msg: 'L\'utilisateur est obligatoire.' }
+                }
             },
             fk_classes: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'Classes', // Nom de la table Classes
+                    model: 'classes',
                     key: 'id'
                 },
-                onUpdate: 'CASCADE',
-                onDelete: 'CASCADE'
+                onDelete: 'CASCADE',
+                validate: {
+                    notNull: { msg: 'La classe est obligatoire.' }
+                }
             },
-            createdAt: {
-                allowNull: false,
+            created_at: {
                 type: Sequelize.DATE,
                 defaultValue: Sequelize.NOW
             },
-            updatedAt: {
-                allowNull: false,
+            updated_at: {
                 type: Sequelize.DATE,
                 defaultValue: Sequelize.NOW
             }
@@ -44,6 +46,6 @@ module.exports = {
     },
 
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('UserClasses');
+        await queryInterface.dropTable('user_classes');
     }
 };

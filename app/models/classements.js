@@ -3,17 +3,18 @@ const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
     class Classement extends Model {
-        static associate() {
-            // Ajouter des associations ici si nécessaire
+        static associate(models) {  // Pass the 'models' parameter to associate method
+            Classement.belongsTo(models.User, { foreignKey: 'fk_user' });
         }
     }
+
     Classement.init({
         number: {
             type: DataTypes.INTEGER,
             allowNull: false,
             validate: {
-                notNull: { msg: 'Le num�ro est obligatoire.' },
-                isInt: { msg: 'Le num�ro doit �tre un entier.' }
+                notNull: { msg: 'Le numéro est obligatoire.' },
+                isInt: { msg: 'Le numéro doit être un entier.' }
             }
         },
         fk_user: {
@@ -26,6 +27,8 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         sequelize,
         modelName: 'Classement',
-        tableName: 'classement'
+        tableName: 'classements'
     });
+
+    return Classement;
 };

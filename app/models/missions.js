@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
         status: {
             type: DataTypes.STRING,
             validate: {
-                isIn: { args: [['quest', 'penality', 'exo', 'defi']], msg: 'Le statut doit �tre quest, penality, exo ou defi.' }
+                isIn: { args: [['quest', 'penality', 'exo', 'defi']], msg: 'Le statut doit être quest, penality, exo ou defi.' }
             }
         },
         points: {
@@ -27,12 +27,14 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             validate: {
                 notNull: { msg: 'Les points sont obligatoires.' },
-                isInt: { msg: 'Les points doivent �tre un entier.' }
+                isInt: { msg: 'Les points doivent être un entier.' }
             }
         }
     }, {
         sequelize,
-        modelName: 'Missions',
+        modelName: 'Mission',
         tableName: 'missions'
     });
+
+    return Mission;
 };

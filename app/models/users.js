@@ -3,34 +3,76 @@ const { Model } = require('sequelize');
 const bcrypt = require('bcrypt');
 
 module.exports = (sequelize, DataTypes) => {
-    class Users extends Model {
+    class User extends Model {
         static associate() {
             // Ajouter des associations ici si nécessaire
         }
     }
-    Users.init({
+    User.init({
         email: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique: true,
+            unique: {
+                args: true,
+                msg: "L'adresse email est déjà utilisé"
+            },
+            required: [true, "L'adresse email est requise"],
+            trim: true,
+            lowercase: true,
             validate: {
-                isEmail: { msg: 'L\'adresse email doit �tre valide.' },
-                notNull: { msg: 'L\'email est obligatoire.' }
+                isEmail: {
+                    msg: "L'e-mail doit être dans un format correct"
+                },
+                notNull: {
+                    msg: "L'adresse email est requise"
+                },
+                notEmpty: {
+                    msg: "L'adresse email est requise"
+                },
+                isValidEmail: function (value) {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(value)) {
+                        throw new Error("Le format de l'email est invalide !");
+                    }
+                }
             }
         },
         username: {
             type: DataTypes.STRING,
             allowNull: false,
+            unique: {
+                args: true,
+                msg: "Ce nom d'utilisateur est déjà utilisé"
+            },
             validate: {
-                notNull: { msg: 'Le nom d\'utilisateur est obligatoire.' }
+                notNull: {
+                    msg: "Le nom d'utilisateur est requis"
+                },
+                isValidUsername(value) {
+                    const usernameRegex = /^(?=.*[A-Za-z])([A-Za-z0-9_-]{3,15})$/;
+                    if (!usernameRegex.test(value)) {
+                        throw new Error("Nom d'utilisateur : 3 à 15 caractères, min une lettre, et peut contenir chiffres et tirets");
+                    }
+                }
             }
         },
         password: {
             type: DataTypes.STRING,
             allowNull: false,
+            required: [true, 'Le mot de passe est requis'],
             validate: {
-                notNull: { msg: 'Le mot de passe est obligatoire.' },
-                len: { args: [8, 128], msg: 'Le mot de passe doit contenir entre 8 et 128 caract�res.' }
+                notNull: {
+                    msg: "Le mot de passe est requis"
+                },
+                notEmpty: {
+                    msg: "Le mot de passe est requis"
+                },
+                isValidPassword(value) {
+                    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+=\-[\]{};:,.<>?/\\|`~"'£¤§µ¢₹])[A-Za-z\d!@#$%^&*()_+=\-[\]{};:,.<>?/\\|`~"'£¤§µ¢₹]{12,}$/;
+                    if (!passwordRegex.test(value)) {
+                        throw new Error("Mot de passe : 12 caractères min, majuscules, minuscules, chiffres et caractères spéciaux");
+                    }
+                }
             }
         },
         registration_date: {
@@ -43,7 +85,7 @@ module.exports = (sequelize, DataTypes) => {
         experience: {
             type: DataTypes.STRING,
             validate: {
-                isIn: { args: [['BEGINNER', 'INTERMEDIATE', 'EXPERT']], msg: 'L\'exp�rience doit �tre BEGINNER, INTERMEDIATE ou EXPERT.' }
+                isIn: { args: [['BEGINNER', 'INTERMEDIATE', 'EXPERT']], msg: 'L\'expérience doit être BEGINNER, INTERMEDIATE ou EXPERT.' }
             }
         },
         points: {
@@ -51,10 +93,11 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 0
         },
         abonnement: {
-            type: DataTypes.STRING,
+            type: DataTypes.ENUM('USER', 'ADMIN', 'SUPER_ADMIN'),
+            allowNull: false,
             defaultValue: 'FREE',
             validate: {
-                isIn: { args: [['FREE', 'PREMIUM']], msg: 'L\'abonnement doit �tre FREE ou PREMIUM.' }
+                isIn: { args: [['FREE', 'PREMIUM']], msg: 'L\'abonnement doit être FREE ou PREMIUM.' }
             }
         },
         role: {
@@ -62,12 +105,12 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: 'User',
             validate: {
-                isIn: { args: [['User', 'Admin', 'SuperAdmin']], msg: 'Le r�le doit �tre User, Admin ou SuperAdmin.' }
+                isIn: { args: [['User', 'Admin', 'SuperAdmin']], msg: 'Le rôle doit être User, Admin ou SuperAdmin.' }
             }
         }
     }, {
         sequelize,
-        modelName: 'Users',
+        modelName: 'User',
         tableName: 'users',
         hooks: {
             beforeCreate: async (user) => {
@@ -92,6 +135,7 @@ module.exports = (sequelize, DataTypes) => {
             },
         }
     });
+
     // Function to normalize Gmail addresses
     function normalizeEmail(email) {
         const [localPart, domainPart] = email.split('@');
@@ -100,5 +144,5 @@ module.exports = (sequelize, DataTypes) => {
         }
         return email;
     }
-    return Users;
+    return User;
 };

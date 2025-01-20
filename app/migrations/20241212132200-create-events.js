@@ -3,27 +3,29 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('items', {
+        await queryInterface.createTable('events', {
             id: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
             },
-            name: {
+            id_missions: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'missions',
+                    key: 'id',
+                },
+                onUpdate: 'CASCADE',
+                onDelete: 'CASCADE',
+            },
+            event_type: {
                 type: Sequelize.STRING,
                 allowNull: false,
                 validate: {
-                    notNull: { msg: 'Le nom est obligatoire.' },
-                }
-            },
-            bonus: {
-                type: Sequelize.INTEGER,
-                allowNull: false,
-                validate: {
-                    notNull: { msg: 'Le bonus est obligatoire.' },
-                    isInt: { msg: 'Le bonus doit être un entier.' },
-                }
+                    isIn: [['MISSION_STARTED', 'MISSION_COMPLETED', 'REMINDER']],
+                },
             },
             created_at: {
                 type: Sequelize.DATE,
@@ -39,6 +41,6 @@ module.exports = {
     },
 
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('items');
+        await queryInterface.dropTable('events');
     }
 };

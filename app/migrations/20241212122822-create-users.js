@@ -3,80 +3,74 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('Users', {
+        await queryInterface.createTable('users', {
             id: {
+                type: Sequelize.INTEGER,
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
-                type: Sequelize.INTEGER
             },
             email: {
                 type: Sequelize.STRING,
                 allowNull: false,
-                unique: true
+                unique: true,
             },
             username: {
                 type: Sequelize.STRING,
-                allowNull: false
+                allowNull: false,
             },
             password: {
                 type: Sequelize.STRING,
-                allowNull: false
+                allowNull: false,
             },
             registration_date: {
                 type: Sequelize.DATE,
-                defaultValue: Sequelize.NOW
+                defaultValue: Sequelize.NOW,
             },
             avatar: {
                 type: Sequelize.STRING,
-                allowNull: true
+                allowNull: true,
             },
             poids: {
                 type: Sequelize.INTEGER,
-                allowNull: true
+                allowNull: true,
             },
             taille: {
                 type: Sequelize.INTEGER,
-                allowNull: true
+                allowNull: true,
             },
             experience: {
-                type: Sequelize.STRING,
+                type: Sequelize.ENUM('BEGINNER', 'INTERMEDIATE', 'EXPERT'),
                 allowNull: true,
-                validate: {
-                    isIn: [['BEGINNER', 'INTERMEDIATE', 'EXPERT']]
-                }
             },
             points: {
                 type: Sequelize.INTEGER,
-                defaultValue: 0
+                defaultValue: 0,
             },
             abonnement: {
-                type: Sequelize.STRING,
-                allowNull: true,
+                type: Sequelize.ENUM('FREE', 'PREMIUM'),
+                allowNull: false,
                 defaultValue: 'FREE',
-                validate: {
-                    isIn: [['FREE', 'PREMIUM']]
-                }
             },
             role: {
                 type: Sequelize.ENUM('User', 'Admin', 'SuperAdmin'),
                 allowNull: false,
-                defaultValue: 'User'
+                defaultValue: 'User',
             },
             createdAt: {
-                allowNull: false,
                 type: Sequelize.DATE,
-                defaultValue: Sequelize.NOW
+                allowNull: false,
+                defaultValue: Sequelize.NOW,
             },
             updatedAt: {
-                allowNull: false,
                 type: Sequelize.DATE,
-                defaultValue: Sequelize.NOW
+                allowNull: false,
+                defaultValue: Sequelize.NOW,
             }
         });
     },
 
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('Users');
+        await queryInterface.dropTable('users');
     }
 };

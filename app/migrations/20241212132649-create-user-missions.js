@@ -3,51 +3,59 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('UserMissions', {
+        await queryInterface.createTable('user_missions', {
             id: {
+                type: Sequelize.INTEGER,
                 allowNull: false,
                 autoIncrement: true,
-                primaryKey: true,
-                type: Sequelize.INTEGER
+                primaryKey: true
             },
             fk_users: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'Users', // Nom de la table Users
+                    model: 'users', // Table 'users'
                     key: 'id'
                 },
-                onUpdate: 'CASCADE',
-                onDelete: 'CASCADE'
+                onDelete: 'CASCADE',
+                validate: {
+                    notNull: { msg: 'L\'utilisateur est obligatoire.' }
+                }
             },
             fk_missions: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'Missions', // Nom de la table Missions
+                    model: 'missions', // Table 'missions'
                     key: 'id'
                 },
-                onUpdate: 'CASCADE',
-                onDelete: 'CASCADE'
+                onDelete: 'CASCADE',
+                validate: {
+                    notNull: { msg: 'La mission est obligatoire.' }
+                }
             },
             starttime: {
                 type: Sequelize.DATE,
-                allowNull: true
+                allowNull: true,
+                validate: {
+                    isDate: { msg: 'La date de début doit être une date valide.' }
+                }
             },
             status: {
                 type: Sequelize.STRING,
                 allowNull: true,
                 validate: {
-                    isIn: [['PASSED', 'FAILED']]
+                    isIn: {
+                        args: [['PASSED', 'FAILED']],
+                        msg: 'Le statut doit être PASSED ou FAILED.'
+                    }
                 }
             },
-            createdAt: {
-                allowNull: false,
+            created_at: {
                 type: Sequelize.DATE,
                 defaultValue: Sequelize.NOW
             },
-            updatedAt: {
-                allowNull: false,
+            updated_at: {
                 type: Sequelize.DATE,
                 defaultValue: Sequelize.NOW
             }
@@ -55,6 +63,6 @@ module.exports = {
     },
 
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('UserMissions');
+        await queryInterface.dropTable('user_missions');
     }
 };

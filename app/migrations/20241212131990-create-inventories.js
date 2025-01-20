@@ -3,27 +3,32 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('items', {
+        await queryInterface.createTable('inventories', {
             id: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
             },
-            name: {
-                type: Sequelize.STRING,
-                allowNull: false,
-                validate: {
-                    notNull: { msg: 'Le nom est obligatoire.' },
-                }
-            },
-            bonus: {
+            fk_items: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
-                validate: {
-                    notNull: { msg: 'Le bonus est obligatoire.' },
-                    isInt: { msg: 'Le bonus doit être un entier.' },
-                }
+                references: {
+                    model: 'items',  // Assurez-vous que la table 'items' existe
+                    key: 'id',
+                },
+                onUpdate: 'CASCADE',
+                onDelete: 'CASCADE',
+            },
+            fk_user: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'users',  // Assurez-vous que la table 'users' existe
+                    key: 'id',
+                },
+                onUpdate: 'CASCADE',
+                onDelete: 'CASCADE',
             },
             created_at: {
                 type: Sequelize.DATE,
@@ -34,11 +39,11 @@ module.exports = {
                 type: Sequelize.DATE,
                 allowNull: false,
                 defaultValue: Sequelize.NOW,
-            }
+            },
         });
     },
 
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('items');
+        await queryInterface.dropTable('inventories');
     }
 };

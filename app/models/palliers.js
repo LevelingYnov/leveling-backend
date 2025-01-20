@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             validate: {
                 notNull: { msg: 'Le point pallier est obligatoire.' },
-                isInt: { msg: 'Le point pallier doit �tre un entier.' }
+                isInt: { msg: 'Le point pallier doit être un entier.' }
             }
         }
     }, {
@@ -28,4 +28,6 @@ module.exports = (sequelize, DataTypes) => {
         modelName: 'Pallier',
         tableName: 'palliers'
     });
+
+    return Pallier;
 };

@@ -3,47 +3,51 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('MissionsDifficulty', {
+        await queryInterface.createTable('missions_difficulty', {
             id: {
+                type: Sequelize.INTEGER,
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
-                type: Sequelize.INTEGER
             },
             fk_missions: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
-                references: {
-                    model: 'Missions', // Nom de la table Missions
-                    key: 'id'
+                validate: {
+                    notNull: { msg: 'La mission est obligatoire.' }
                 },
-                onUpdate: 'CASCADE',
-                onDelete: 'CASCADE'
+                references: {
+                    model: 'missions', // Assurez-vous que la table 'missions' existe
+                    key: 'id',
+                },
+                onDelete: 'CASCADE',  // Supprime les entrées associées si la mission est supprimée
             },
             fk_difficulty: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
-                references: {
-                    model: 'Difficulty', // Nom de la table Difficulty
-                    key: 'id'
+                validate: {
+                    notNull: { msg: 'La difficulté est obligatoire.' }
                 },
-                onUpdate: 'CASCADE',
-                onDelete: 'CASCADE'
+                references: {
+                    model: 'difficulties', // Assurez-vous que la table 'difficulties' existe
+                    key: 'id',
+                },
+                onDelete: 'CASCADE',  // Supprime les entrées associées si la difficulté est supprimée
             },
-            createdAt: {
-                allowNull: false,
+            created_at: {
                 type: Sequelize.DATE,
-                defaultValue: Sequelize.NOW
+                allowNull: false,
+                defaultValue: Sequelize.NOW,
             },
-            updatedAt: {
-                allowNull: false,
+            updated_at: {
                 type: Sequelize.DATE,
-                defaultValue: Sequelize.NOW
+                allowNull: false,
+                defaultValue: Sequelize.NOW,
             }
         });
     },
 
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('MissionsDifficulty');
+        await queryInterface.dropTable('missions_difficulty');
     }
 };

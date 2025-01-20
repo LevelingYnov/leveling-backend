@@ -3,36 +3,47 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('Difficulty', {
+        await queryInterface.createTable('difficulties', {
             id: {
+                type: Sequelize.INTEGER,
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
-                type: Sequelize.INTEGER
             },
             name: {
                 type: Sequelize.STRING,
                 allowNull: false,
-                unique: true
+                unique: {
+                    msg: 'Le nom de la difficulté doit être unique.',
+                },
+                validate: {
+                    notNull: { msg: 'Le nom est obligatoire.' },
+                    notEmpty: { msg: 'Le nom ne peut pas être vide.' },
+                },
             },
             multiplicator: {
                 type: Sequelize.INTEGER,
-                allowNull: false
+                allowNull: false,
+                validate: {
+                    notNull: { msg: 'Le multiplicateur est obligatoire.' },
+                    isInt: { msg: 'Le multiplicateur doit être un entier.' },
+                    min: { args: [1], msg: 'Le multiplicateur doit être supérieur ou égal à 1.' },
+                },
             },
             createdAt: {
-                allowNull: false,
                 type: Sequelize.DATE,
-                defaultValue: Sequelize.NOW
+                allowNull: false,
+                defaultValue: Sequelize.NOW,
             },
             updatedAt: {
-                allowNull: false,
                 type: Sequelize.DATE,
-                defaultValue: Sequelize.NOW
-            }
+                allowNull: false,
+                defaultValue: Sequelize.NOW,
+            },
         });
     },
 
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('Difficulty');
+        await queryInterface.dropTable('difficulties');
     }
 };

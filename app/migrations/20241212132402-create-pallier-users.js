@@ -3,40 +3,42 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('PallierUsers', {
+        await queryInterface.createTable('pallier_users', {
             id: {
+                type: Sequelize.INTEGER,
                 allowNull: false,
                 autoIncrement: true,
-                primaryKey: true,
-                type: Sequelize.INTEGER
+                primaryKey: true
             },
             fk_user: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'Users', // Nom de la table Users
+                    model: 'users',
                     key: 'id'
                 },
-                onUpdate: 'CASCADE',
-                onDelete: 'CASCADE'
+                onDelete: 'CASCADE',
+                validate: {
+                    notNull: { msg: 'L\'utilisateur est obligatoire.' }
+                }
             },
             fk_pallier: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'Pallier', // Nom de la table Pallier
+                    model: 'palliers',
                     key: 'id'
                 },
-                onUpdate: 'CASCADE',
-                onDelete: 'CASCADE'
+                onDelete: 'CASCADE',
+                validate: {
+                    notNull: { msg: 'Le pallier est obligatoire.' }
+                }
             },
-            createdAt: {
-                allowNull: false,
+            created_at: {
                 type: Sequelize.DATE,
                 defaultValue: Sequelize.NOW
             },
-            updatedAt: {
-                allowNull: false,
+            updated_at: {
                 type: Sequelize.DATE,
                 defaultValue: Sequelize.NOW
             }
@@ -44,6 +46,6 @@ module.exports = {
     },
 
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('PallierUsers');
+        await queryInterface.dropTable('pallier_users');
     }
 };

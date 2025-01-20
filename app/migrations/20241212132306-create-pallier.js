@@ -3,28 +3,33 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('Pallier', {
+        await queryInterface.createTable('palliers', {
             id: {
+                type: Sequelize.INTEGER,
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
-                type: Sequelize.INTEGER
             },
             name: {
                 type: Sequelize.STRING,
-                allowNull: false
+                allowNull: false,
+                validate: {
+                    notNull: { msg: 'Le nom est obligatoire.' }
+                }
             },
             point_pallier: {
                 type: Sequelize.INTEGER,
-                allowNull: false
-            },
-            createdAt: {
                 allowNull: false,
+                validate: {
+                    notNull: { msg: 'Le point pallier est obligatoire.' },
+                    isInt: { msg: 'Le point pallier doit être un entier.' }
+                }
+            },
+            created_at: {
                 type: Sequelize.DATE,
                 defaultValue: Sequelize.NOW
             },
-            updatedAt: {
-                allowNull: false,
+            updated_at: {
                 type: Sequelize.DATE,
                 defaultValue: Sequelize.NOW
             }
@@ -32,6 +37,6 @@ module.exports = {
     },
 
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('Pallier');
+        await queryInterface.dropTable('palliers');
     }
 };

@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
-const router = require("./app/Routes/index.js");
+const cookieParser = require('cookie-parser');
+const router = require("./app/routes/index.js");
 const db = require("./app/models/index.js");
 
 db.sequelize
@@ -9,6 +10,7 @@ db.sequelize
     .catch((err) => console.log(err));
 
 app.use(express.json());
+app.use(cookieParser());
 app.use("/api", router);
 
 module.exports = app;

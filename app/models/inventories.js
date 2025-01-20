@@ -2,17 +2,22 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class Inventories extends Model {
-        static associate() {
-            // Ajouter des associations ici si nécessaire
+    class Inventorie extends Model {
+        static associate(models) {
+            Inventorie.belongsTo(models.Item, { foreignKey: 'fk_items', as: 'item' });
+            Inventorie.belongsTo(models.User, { foreignKey: 'fk_user', as: 'user' });
         }
     }
-    Inventories.init({
+    Inventorie.init({
         fk_items: {
             type: DataTypes.INTEGER,
             allowNull: false,
             validate: {
                 notNull: { msg: 'L\'item est obligatoire.' }
+            },
+            references: {
+                model: 'items',
+                key: 'id'
             }
         },
         fk_user: {
@@ -20,11 +25,17 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             validate: {
                 notNull: { msg: 'L\'utilisateur est obligatoire.' }
+            },
+            references: {
+                model: 'users',
+                key: 'id'
             }
         }
     }, {
         sequelize,
-        modelName: 'Inventories',
+        modelName: 'Inventorie',
         tableName: 'inventories'
     });
+
+    return Inventorie;
 };

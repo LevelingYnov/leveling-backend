@@ -3,35 +3,38 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('Classes', {
+        await queryInterface.createTable('classes', {
             id: {
+                type: Sequelize.INTEGER,
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
-                type: Sequelize.INTEGER
             },
             name: {
                 type: Sequelize.STRING,
-                allowNull: false
+                allowNull: false,
+                validate: {
+                    len: [3, 50], // Validation de la longueur du nom
+                },
             },
             description: {
-                type: Sequelize.STRING,
-                allowNull: true
+                type: Sequelize.TEXT,
+                allowNull: true, // Description peut être nulle
             },
             createdAt: {
-                allowNull: false,
                 type: Sequelize.DATE,
-                defaultValue: Sequelize.NOW
+                allowNull: false,
+                defaultValue: Sequelize.NOW,
             },
             updatedAt: {
-                allowNull: false,
                 type: Sequelize.DATE,
-                defaultValue: Sequelize.NOW
+                allowNull: false,
+                defaultValue: Sequelize.NOW,
             }
         });
     },
 
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('Classes');
+        await queryInterface.dropTable('classes');
     }
 };

@@ -2,23 +2,27 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class Events extends Model {
-        static associate() {
-            // Ajouter des associations ici si nécessaire
+    class Event extends Model {
+        static associate(models) {
+            Event.belongsTo(models.Mission, { foreignKey: 'id_missions', as: 'mission' });
         }
     }
-    Events.init({
+    Event.init({
         id_missions: {
             type: DataTypes.INTEGER,
             allowNull: false,
             validate: {
                 notNull: { msg: 'La mission est obligatoire.' }
+            },
+            references: {
+                model: 'missions',
+                key: 'id'
             }
         },
         event_type: {
             type: DataTypes.STRING,
             validate: {
-                isIn: { args: [['MISSION_STARTED', 'MISSION_COMPLETED', 'REMINDER']], msg: 'Le type d\'�v�nement doit �tre valide.' }
+                isIn: { args: [['MISSION_STARTED', 'MISSION_COMPLETED', 'REMINDER']], msg: 'Le type d\'évènement doit être valide.' }
             }
         },
         created_at: {
@@ -27,7 +31,9 @@ module.exports = (sequelize, DataTypes) => {
         }
     }, {
         sequelize,
-        modelName: 'Events',
+        modelName: 'Event',
         tableName: 'events'
     });
+
+    return Event;
 };
