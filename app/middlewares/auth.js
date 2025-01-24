@@ -1,42 +1,47 @@
 const jwt = require('jsonwebtoken');
+const { Token } = require('../models');
 
 /**
- * @module middlewares/auth
- * @description Middleware d'authentification qui vérifie le token JWT pour autoriser ou refuser l'accès aux routes protégées.
+ * Middleware d'authentification qui vérifie le Bearer Token.
  */
-
-/**
- * Middleware d'authentification.
- * 
- * Ce middleware vérifie le token JWT dans les cookies de la requête, le décode,
- * et ajoute les informations d'utilisateur (userId et userRole) à l'objet `req.auth`.
- * Si le token est valide, il appelle `next()` pour passer au middleware suivant.
- * Sinon, il renvoie une réponse 401 Unauthorized.
- * 
- * @function
- * @param {Object} req - L'objet de requête Express.
- * @param {Object} res - L'objet de réponse Express.
- * @param {function} next - La fonction pour passer au middleware suivant.
- * @throws {Error} Renvoie une erreur si le token est invalide ou absent.
- */
-module.exports = (req, res, next) => {
+module.exports = async (req, res, next) => {
     try {
-        const token = req.cookies.token; 
+        // Récupérer le token dans l'en-tête Authorization
+        const authHeader = req.headers.authorization;
 
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            throw new Error('Token missing or malformed');
+        }
+
+        const token = authHeader.split(' ')[1]; // Extraire le token après "Bearer"
+
+        // Vérifier et décoder le token
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
 
-        const userId = decodedToken.userId;
-        const userRole = decodedToken.userRole;
-
-        req.auth = {
-            userId,
-            userRole
-        };
-        
-        next();
-    } catch {
-        res.status(401).json({
-            error: 'Unauthorized request!'
+        // Vérifier si le token est valide dans la base de données
+        const storedToken = await Token.findOne({
+            where: {
+                user_id: decodedToken.userId,
+                access_token: token,
+            },
         });
+
+        if (!storedToken) {
+            return res.status(401).json({ error: 'Invalid token. Please log in again.' });
+        }
+
+        // Ajouter les infos d'authentification à la requête
+        req.auth = {
+            userId: decodedToken.userId,
+            userRole: decodedToken.userRole,
+        };
+
+        next(); // Continuer vers le middleware suivant ou le contrôleur
+    } catch (error) {
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ message: 'Token expired. Please refresh.' });
+        }
+
+        res.status(401).json({ error: 'Unauthorized request!' });
     }
 };

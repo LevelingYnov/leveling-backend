@@ -9,7 +9,6 @@ module.exports = (sequelize, DataTypes) => {
             DefiUsers.belongsTo(models.Mission, { foreignKey: 'fk_missions', as: 'mission' });
         }
     }
-
     DefiUsers.init({
         fk_user: {
             type: DataTypes.INTEGER,

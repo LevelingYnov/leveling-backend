@@ -7,7 +7,6 @@ module.exports = (sequelize, DataTypes) => {
             Classement.belongsTo(models.User, { foreignKey: 'fk_user' });
         }
     }
-
     Classement.init({
         number: {
             type: DataTypes.INTEGER,

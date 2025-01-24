@@ -5,6 +5,7 @@ const normalizeEmailMiddleware = require('../middlewares/normalizeEmail');
 
 router.post("/signup", authCtrl.signup);
 router.post("/login", normalizeEmailMiddleware, authCtrl.login);
+router.post("/refreshToken", authCtrl.refreshToken);
 router.post("/logout", authCtrl.logout);
 
 module.exports = router;

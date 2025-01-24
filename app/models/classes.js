@@ -4,14 +4,9 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class Class extends Model {
         static associate(models) {
-            // Exemple d'association : une classe pourrait avoir plusieurs utilisateurs
-            // Class.hasMany(models.User, { foreignKey: 'class_id' });
-
-            // Exemple d'association : une classe pourrait avoir plusieurs missions
-            // Class.hasMany(models.Mission, { foreignKey: 'class_id' });
+            
         }
     }
-
     Class.init({
         name: {
             type: DataTypes.STRING,

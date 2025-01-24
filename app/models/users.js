@@ -114,7 +114,6 @@ module.exports = (sequelize, DataTypes) => {
         tableName: 'users',
         hooks: {
             beforeCreate: async (user) => {
-                // Normalize the email
                 user.email = normalizeEmail(user.email);
 
                 if (user.password) {
@@ -136,7 +135,6 @@ module.exports = (sequelize, DataTypes) => {
         }
     });
 
-    // Function to normalize Gmail addresses
     function normalizeEmail(email) {
         const [localPart, domainPart] = email.split('@');
         if (domainPart.toLowerCase() === 'gmail.com') {
@@ -144,5 +142,6 @@ module.exports = (sequelize, DataTypes) => {
         }
         return email;
     }
+
     return User;
 };
