@@ -48,7 +48,7 @@ exports.read = async (req, res) => {
         const userId = req.params.id;
         const user = await User.findOne({
             where: { id: userId },
-            attributes: { exclude: ['password'] } // Exclure le champ 'password'
+            attributes: { exclude: ['password', 'email', 'poids', 'taille', 'role', 'registration_date'] } // Exclure le champ 'password'
         });
 
         if (!user) {
@@ -75,7 +75,7 @@ exports.read = async (req, res) => {
 exports.readAll = async (req, res) => {
     try {
         const users = await User.findAll({
-            attributes: { exclude: ['password', 'email'] }  // Adjust exclusions as needed
+            attributes: { exclude: ['password', 'email', 'poids', 'taille', 'role', 'registration_date'] }  // Adjust exclusions as needed
         });        
 
         if (!users) {
