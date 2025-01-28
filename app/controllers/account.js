@@ -91,6 +91,71 @@ exports.readAll = async (req, res) => {
 };
 
 /**
+ * Met à jour les informations d'un utilisateur.
+ *
+ * @function update
+ * @async
+ * @param {Object} req - La requête HTTP.
+ * @param {Object} res - La réponse HTTP.
+ * @throws {Error} En cas d'erreur lors de la mise à jour de l'utilisateur.
+ *
+ * @example
+ * // Exemple de requête
+ * PATCH /api/users/update
+ * {
+ *   "datas": {
+ *     "username": "nouveau_nom",
+ *     "email": "nouvel_email@example.com",
+ *     "avatar": "delete"
+ *   }
+ * }
+ */
+exports.update = async (req, res) => {
+    try {
+        const userId = req.auth.userId;
+        const datas = JSON.parse(req.body.datas);
+        const { username, email, poids, taille } = datas;
+
+        if (!userId) {
+            return res.status(400).json({ message: "User ID is required." });
+        }
+
+        // Trouver l'utilisateur par ID
+        const user = await User.findOne({ where: { id: userId } });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Mise à jour des informations de l'utilisateur
+        if (username) {
+            // Valider le username
+            const usernameRegex = /^(?=.*[a-zA-Z])(?=^[A-Za-z0-9_-]{3,15}$)/; // Regex pour le username
+            if (!usernameRegex.test(username)) {
+                return res.status(400).json({
+                    message: "Nom d'utilisateur : 3 à 15 caractères, min une lettre, et peut contenir des chiffres, des tirets et des tirets du bas"
+                });
+            }
+            user.username = username;
+        }
+
+        if(email) user.email = email;
+
+        if(poids) user.poids = poids;
+
+        if(taille) user.taille = taille;
+
+        await user.save();
+
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({
+            message: error.message || 'Une erreur est survenue lors de la mise à jour du compte.'
+        });
+    }
+};
+
+/**
  * Supprime un utilisateur et son avatar.
  *
  * @function delete
