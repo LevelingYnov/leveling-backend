@@ -3,8 +3,13 @@ const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
     class Item extends Model {
-        static associate() {
-            // Ajouter des associations ici si nécessaire
+        static associate(models) {
+            // Item.belongsToMany(models.Inventorie, { 
+            //     through: 'InventorieItems', 
+            //     foreignKey: 'fk_item',
+            //     otherKey: 'fk_inventory',
+            //     as: 'inventories' 
+            // });
         }
     }
     Item.init({
@@ -26,7 +31,8 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         sequelize,
         modelName: 'Item',
-        tableName: 'items'
+        tableName: 'items',
+        timestamps: false
     });
 
     return Item;

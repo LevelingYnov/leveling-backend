@@ -4,22 +4,17 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class Inventorie extends Model {
         static associate(models) {
-            Inventorie.belongsTo(models.Item, { foreignKey: 'fk_items', as: 'item' });
             Inventorie.belongsTo(models.User, { foreignKey: 'fk_user', as: 'user' });
+
+            Inventorie.belongsToMany(models.Item, { 
+                through: 'InventorieItems', 
+                foreignKey: 'fk_inventory',
+                otherKey: 'fk_item',
+                as: 'items' 
+            });
         }
     }
     Inventorie.init({
-        fk_items: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            validate: {
-                notNull: { msg: 'L\'item est obligatoire.' }
-            },
-            references: {
-                model: 'items',
-                key: 'id'
-            }
-        },
         fk_user: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -34,7 +29,8 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         sequelize,
         modelName: 'Inventorie',
-        tableName: 'inventories'
+        tableName: 'inventories',
+        timestamps: false
     });
 
     return Inventorie;

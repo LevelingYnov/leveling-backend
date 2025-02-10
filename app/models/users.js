@@ -90,7 +90,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         points: {
             type: DataTypes.INTEGER,
-            defaultValue: 0
+            defaultValue: 100
         },
         abonnement: {
             type: DataTypes.ENUM('USER', 'ADMIN', 'SUPER_ADMIN'),

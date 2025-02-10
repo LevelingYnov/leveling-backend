@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
             }
         },
         description: {
-            type: DataTypes.TEXT, // Utilisation de TEXT si la description est longue
+            type: DataTypes.TEXT,
             allowNull: true
         }
     }, {

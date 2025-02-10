@@ -4,7 +4,7 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class Classement extends Model {
         static associate(models) {  // Pass the 'models' parameter to associate method
-            Classement.belongsTo(models.User, { foreignKey: 'fk_user' });
+            Classement.belongsTo(models.User, { foreignKey: 'fk_user', as: 'user' });
         }
     }
     Classement.init({

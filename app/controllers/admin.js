@@ -83,7 +83,7 @@ exports.update = async (req, res) => {
     try {
         const userId = req.params.id;
         const datas = JSON.parse(req.body.datas);
-        const { username, email, password, role } = datas;
+        const { username, email, password, role, points } = datas;
 
         // Récupération de l'utilisateur cible
         const user = await User.findOne({ where: { id: userId } });
@@ -117,6 +117,7 @@ exports.update = async (req, res) => {
             }
         }
         if (role) user.role = role;
+        if (points) user.points = points;
 
         await user.save();
 
