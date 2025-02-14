@@ -1,13 +1,13 @@
 
 'use strict';
 const { Model } = require('sequelize');
-const user_classes = require('./user_classes');
 
 module.exports = (sequelize, DataTypes) => {
     class UserMission extends Model {
         static associate(models) {
             UserMission.belongsTo(models.User, { foreignKey: 'fk_users', as: 'user' });
             UserMission.belongsTo(models.Mission, { foreignKey: 'fk_missions', as: 'mission' });
+            UserMission.belongsTo(models.Difficulty, { foreignKey: 'fk_difficulty', as: 'difficulty' });
         }
     }
     UserMission.init({
@@ -32,6 +32,12 @@ module.exports = (sequelize, DataTypes) => {
             validate: {
                 notNull: { msg: 'La mission est obligatoire.' }
             }
+        },
+        fk_difficulty: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 1,
+            references: { model: 'difficulties', key: 'id' }
         },
         starttime: DataTypes.DATE,
         status: {

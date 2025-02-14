@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
                 notNull: { msg: 'La mission est obligatoire.' }
             },
             references: {
-                model: 'missions', // Assurez-vous que la table 'missions' existe
+                model: 'missions',
                 key: 'id'
             }
         },
@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
                 notNull: { msg: 'La difficulté est obligatoire.' }
             },
             references: {
-                model: 'difficulties', // Assurez-vous que la table 'difficulties' existe
+                model: 'difficulties',
                 key: 'id'
             }
         }

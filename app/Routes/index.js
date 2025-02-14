@@ -7,6 +7,9 @@ const classRoutes = require('./class.js');
 const itemsRoutes = require('./items.js');
 const inventoriesRoutes = require('./inventories.js');
 const classementRoutes = require('./classement.js');
+const palliersRoutes = require('./palliers.js');
+const missionsRoutes = require('./missions.js');
+const difficultiesRoutes = require('./difficulty.js');
 
 /**
  * Les différentes routes de l'application sont définies ici et reliées à leur fichier respectif.
@@ -20,5 +23,8 @@ router.use("/class", classRoutes);
 router.use("/items", itemsRoutes);
 router.use("/inventories", inventoriesRoutes);
 router.use("/classement", classementRoutes);
+router.use("/palliers", palliersRoutes);
+router.use("/missions", missionsRoutes);
+router.use("/difficulty", difficultiesRoutes);
 
 module.exports = router;

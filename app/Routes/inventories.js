@@ -9,7 +9,7 @@ const authorizeAdminMiddleware = require("../middlewares/authorizeAdmin.js");
  * 
  * @module routes
  */
-router.post("/", authMiddleware, inventoriesCtrl.addItem)
+router.post("/", authMiddleware, inventoriesCtrl.addItem);
 router.get("/", authMiddleware, inventoriesCtrl.readOwn);
 
 /**inven

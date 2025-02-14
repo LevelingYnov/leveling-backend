@@ -29,11 +29,20 @@ module.exports = (sequelize, DataTypes) => {
                 notNull: { msg: 'Les points sont obligatoires.' },
                 isInt: { msg: 'Les points doivent être un entier.' }
             }
+        },
+        limit_time: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        minimum_time: {
+            type: DataTypes.INTEGER,
+            allowNull: false
         }
     }, {
         sequelize,
         modelName: 'Mission',
-        tableName: 'missions'
+        tableName: 'missions',
+        timestamps: false
     });
 
     return Mission;
