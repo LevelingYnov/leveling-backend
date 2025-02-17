@@ -1,20 +1,22 @@
-const { Mission, UserMission, User, Difficulty, MissionsDifficulty  } = require('../models');
+const { Mission, UserMission, User, Difficulty, MissionsDifficulty, Event } = require('../models');
 const { Op } = require('sequelize');
+const moment = require('moment');
 
 exports.assignMissionToUser = async (req, res) => {
     try {
         const userId = req.auth.userId;
         const user = await User.findByPk(userId);
-        
+        const { missionType } = req.body;
+
         if (!user) {
             return res.status(404).json({ message: 'Utilisateur non trouvé' });
         }
 
         // Vérifier si l'utilisateur a déjà une mission en cours
         const existingMission = await UserMission.findOne({
-            where: { 
-                fk_users: userId, 
-                status: null // Signifie que la mission est en cours (pas encore vérifiée)
+            where: {
+                fk_users: userId,
+                status: null
             }
         });
 
@@ -25,9 +27,11 @@ exports.assignMissionToUser = async (req, res) => {
         // Trouver toutes les missions qui correspondent aux points de l'utilisateur
         const missions = await Mission.findAll({
             where: {
+                status: missionType,
                 points: { [Op.lte]: user.points },
             },
         });
+
 
         if (missions.length === 0) {
             return res.status(400).json({ message: 'Aucune mission disponible' });
@@ -57,8 +61,11 @@ exports.assignMissionToUser = async (req, res) => {
             status: null
         });
 
+        // Réinitialiser le req.body (facultatif)
+        req.body = {};
+
         res.status(201).json({
-            message: 'Mission assignée avec succès',
+            message: `Mission de type ${missionType} assignée avec succès`,
             mission: randomMission,
             difficulty: {
                 id: missionDifficulty.difficulty.id,
@@ -67,6 +74,47 @@ exports.assignMissionToUser = async (req, res) => {
             }
         });
     } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.triggerMissionFromEvent = async (req, res) => {
+    try {
+        const userId = req.auth.userId; // Récupérer l'utilisateur connecté via le JWT
+        const { event_type } = req.body;
+
+        if (!event_type) {
+            return res.status(400).json({ message: 'Le type d\'événement est obligatoire.' });
+        }
+
+        // Trouver l'événement associé à l'utilisateur et au type d'événement (MISSION ou PENALITY)
+        const event = await Event.findOne({
+            where: {
+                id_users: userId,
+                event_type,
+            }
+        });
+
+        if (!event) {
+            return res.status(404).json({ message: 'Aucun événement valide trouvé pour cet utilisateur.' });
+        }
+
+        const currentTime = moment.utc().format("HH:mm:ss");  // Heure actuelle (HH:mm:ss)
+        const startTime = moment.utc(event.start_time, "HH:mm:ss").format("HH:mm:ss"); // Extrait l'heure de start_time
+        const endTime = moment.utc(event.end_time, "HH:mm:ss").format("HH:mm:ss");
+
+
+        if (currentTime < startTime || currentTime > endTime) {
+            return res.status(400).json({ message: "L'événement n'est pas dans la plage horaire." });
+        }
+
+        let missionType = event_type === 'PENALITY' ? 'penality' : 'quest';
+
+        req.body.missionType = missionType;
+
+        await exports.assignMissionToUser(req, res);
+    } catch (error) {
+        console.error('Erreur dans le déclenchement des missions à partir des événements :', error.message);
         res.status(500).json({ error: error.message });
     }
 };
@@ -116,6 +164,13 @@ exports.checkMissionStatus = async (req, res) => {
             newPoints -= Math.floor(mission.points / 2);
             await user.update({ points: newPoints });
 
+            // Vérifier si l'événement est une pénalité et déclencher une nouvelle mission si nécessaire
+            if (mission.status !== 'penality') {
+                req.body.event_type = 'PENALITY';
+                await exports.triggerMissionFromEvent(req, res);  // Appel d'une autre fonction pour gérer la pénalité
+                return; // Ici on retourne après avoir appelé `triggerMissionFromEvent`, pour éviter d'envoyer plusieurs réponses.
+            }
+
             return res.status(200).json({
                 message: 'Mission échouée',
                 status: 'FAILED',
@@ -138,7 +193,7 @@ exports.checkMissionStatus = async (req, res) => {
             });
         }
 
-        res.status(200).json({ message: 'Mission en cours, pas encore vérifiée.' });
+        return res.status(200).json({ message: 'Mission en cours, pas encore vérifiée.' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -146,10 +201,10 @@ exports.checkMissionStatus = async (req, res) => {
 
 exports.logsUserMission = async (req, res) => {
     try {
-        const userId = req.auth.userId; 
+        const userId = req.auth.userId;
 
         const userMissions = await UserMission.findAll({
-            where: { 
+            where: {
                 fk_users: userId,
                 status: { [Op.not]: null } // Filtrer uniquement celles qui ont un statut (PASSED ou FAILED)
             },
@@ -199,7 +254,7 @@ exports.read = async (req, res) => {
 
 exports.readAll = async (req, res) => {
     try {
-        const missions = await Mission.findAll(); 
+        const missions = await Mission.findAll();
 
         res.status(200).json(missions);
     } catch (error) {
@@ -262,11 +317,11 @@ exports.update = async (req, res) => {
         }
 
         await mission.update({
-            name, 
-            description, 
-            points, 
-            status, 
-            minimum_time, 
+            name,
+            description,
+            points,
+            status,
+            minimum_time,
             limit_time
         });
 
