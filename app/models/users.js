@@ -107,7 +107,15 @@ module.exports = (sequelize, DataTypes) => {
             validate: {
                 isIn: { args: [['User', 'Admin', 'SuperAdmin']], msg: 'Le rôle doit être User, Admin ou SuperAdmin.' }
             }
-        }
+        },
+        resetPasswordToken: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        resetPasswordExpires: {
+            type: DataTypes.DATE,
+            allowNull: true,
+        },
     }, {
         sequelize,
         modelName: 'User',

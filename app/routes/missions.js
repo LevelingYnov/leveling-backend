@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express();
-const missionsCtrl = require("../controllers/missions.js");
 const authMiddleware = require("../middlewares/auth.js");
 const authorizeAdminMiddleware = require("../middlewares/authorizeAdmin.js");
+const getRandomItemMiddleware  = require("../middlewares/dropItemMiddleware");
+const missionsCtrl = require("../controllers/missions.js");
 
 /**
  * Les différentes routes pour les items.
@@ -11,7 +12,7 @@ const authorizeAdminMiddleware = require("../middlewares/authorizeAdmin.js");
  */
 router.post("/trigger", authMiddleware, missionsCtrl.triggerMissionFromEvent);
 router.post('/assign', authMiddleware, missionsCtrl.assignMissionToUser);
-router.get('/status/:id', authMiddleware, missionsCtrl.checkMissionStatus);
+router.get('/status/:id', authMiddleware, getRandomItemMiddleware, missionsCtrl.checkMissionStatus);
 router.get("/logs", authMiddleware, missionsCtrl.logsUserMission);
 
 // /**

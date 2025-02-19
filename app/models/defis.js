@@ -4,42 +4,40 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class Defi extends Model {
         static associate(models) {
-            Defi.belongsTo(models.User, { foreignKey: 'fk_defi_users', as: 'user' });
+            Defi.belongsTo(models.User, { foreignKey: 'fk_user1', as: 'user1' });
+            Defi.belongsTo(models.User, { foreignKey: 'fk_user2', as: 'user2' });
+            Defi.belongsTo(models.Mission, { foreignKey: 'fk_mission', as: 'mission' });
         }
     }
+
     Defi.init({
-        code_user: {
+        code_defi: {
             type: DataTypes.STRING,
             allowNull: false,
+            unique: false,
             validate: {
-                notNull: { msg: 'Le code utilisateur est obligatoire.' },
-                notEmpty: { msg: 'Le code utilisateur ne peut pas être vide.' }
+                notEmpty: { msg: 'Le code du défi est obligatoire.' }
             }
         },
-        code_user2: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                notNull: { msg: 'Le code du deuxième utilisateur est obligatoire.' },
-                notEmpty: { msg: 'Le code du deuxième utilisateur ne peut pas être vide.' }
-            }
+        fk_user1: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        fk_user2: {
+            type: DataTypes.INTEGER,
+            allowNull: true // Null jusqu'à ce qu'un deuxième joueur rejoigne
+        },
+        fk_mission: {
+            type: DataTypes.INTEGER,
+            allowNull: false
         },
         winner: {
             type: DataTypes.INTEGER,
-            allowNull: true,
-            validate: {
-                isInt: { msg: 'Le gagnant doit être un entier.' },
-                min: 1,
-                max: 2,  // Assure que le gagnant soit soit '1' (code_user) ou '2' (code_user2)
-                isIn: { args: [[1, 2]], msg: 'Le gagnant doit être soit 1 (utilisateur 1) ou 2 (utilisateur 2).' }
-            }
+            allowNull: true // Null jusqu'à ce qu'il y ait un gagnant
         },
-        fk_defi_users: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            validate: {
-                notNull: { msg: 'La relation défi-utilisateur est obligatoire.' }
-            }
+        status: {
+            type: DataTypes.ENUM('PENDING', 'ACTIVE', 'FINISHED'),
+            defaultValue: 'PENDING'
         }
     }, {
         sequelize,

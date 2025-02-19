@@ -1,12 +1,13 @@
-const { Mission, UserMission, User, Difficulty, MissionsDifficulty, Event } = require('../models');
+const { Mission, UserMission, User, Difficulty, MissionsDifficulty, Event, Defi } = require('../models');
 const { Op } = require('sequelize');
 const moment = require('moment');
+const { addItem } = require('./inventories');
 
 exports.assignMissionToUser = async (req, res) => {
     try {
         const userId = req.auth.userId;
         const user = await User.findByPk(userId);
-        const { missionType } = req.body;
+        const { missionType, defiId } = req.body;
 
         if (!user) {
             return res.status(404).json({ message: 'Utilisateur non trouvé' });
@@ -24,55 +25,88 @@ exports.assignMissionToUser = async (req, res) => {
             return res.status(400).json({ message: 'Une mission est déjà en cours.' });
         }
 
-        // Trouver toutes les missions qui correspondent aux points de l'utilisateur
-        const missions = await Mission.findAll({
-            where: {
-                status: missionType,
-                points: { [Op.lte]: user.points },
-            },
-        });
+        let mission;
+        let defi;
 
+        if (missionType === "defi") {
+            defi = await Defi.findByPk(defiId);
+            if (!defi) {
+                return res.status(404).json({ message: "Défi introuvable" });
+            }
+            mission = await Mission.findByPk(defi.fk_mission);
+        } else {
+            // Missions normales
+            const missions = await Mission.findAll({
+                where: {
+                    status: missionType,
+                    points: { [Op.lte]: user.points }
+                }
+            });
 
-        if (missions.length === 0) {
-            return res.status(400).json({ message: 'Aucune mission disponible' });
+            if (missions.length === 0) {
+                return res.status(400).json({ message: 'Aucune mission disponible' });
+            }
+
+            mission = missions[Math.floor(Math.random() * missions.length)];
         }
 
-        // Sélectionner une mission aléatoire parmi celles disponibles
-        const randomMission = missions[Math.floor(Math.random() * missions.length)];
+        if (!mission) {
+            return res.status(404).json({ message: "Aucune mission trouvée." });
+        }
 
         const missionDifficulty = await MissionsDifficulty.findOne({
-            where: { fk_missions: randomMission.id },
-            include: {
-                model: Difficulty,
-                as: 'difficulty',
-            }
+            where: { fk_missions: mission.id },
+            include: { model: Difficulty, as: 'difficulty' }
         });
 
         if (!missionDifficulty || !missionDifficulty.difficulty) {
             return res.status(400).json({ message: 'Difficulté non définie pour cette mission.' });
         }
 
-        // Créer une nouvelle entrée dans UserMission pour assigner cette mission à l'utilisateur
-        await UserMission.create({
-            fk_users: userId,
-            fk_missions: randomMission.id,
-            fk_difficulty: missionDifficulty.difficulty.id,
-            starttime: new Date(),
-            status: null
-        });
+        if (missionType === "defi") {
+            // Créer la mission pour l'utilisateur 1
+            await UserMission.create({
+                fk_users: defi.fk_user1, // Utilisateur 1 du défi
+                fk_missions: mission.id,
+                fk_difficulty: missionDifficulty.difficulty.id,
+                starttime: new Date(),
+                status: null
+            });
 
-        // Réinitialiser le req.body (facultatif)
-        req.body = {};
+            // Créer la mission pour l'utilisateur 2
+            await UserMission.create({
+                fk_users: defi.fk_user2, // Utilisateur 2 du défi
+                fk_missions: mission.id,
+                fk_difficulty: missionDifficulty.difficulty.id,
+                starttime: new Date(),
+                status: null
+            });
 
-        res.status(201).json({
-            message: `Mission de type ${missionType} assignée avec succès`,
-            mission: randomMission,
-            difficulty: {
-                id: missionDifficulty.difficulty.id,
-                name: missionDifficulty.difficulty.name,
-                multiplicator: missionDifficulty.difficulty.multiplicator
-            }
-        });
+            res.status(201).json({
+                message: `Défi créé avec succès, prêt à être joué.`,
+                mission,
+                difficulty: missionDifficulty.difficulty
+            });
+        } else {
+            // Créer une nouvelle entrée dans UserMission pour assigner cette mission à l'utilisateur
+            await UserMission.create({
+                fk_users: userId,
+                fk_missions: mission.id,
+                fk_difficulty: missionDifficulty.difficulty.id,
+                starttime: new Date(),
+                status: null
+            });
+
+            res.status(201).json({
+                message: `Mission de type ${missionType} assignée avec succès`,
+                mission: mission,
+                difficulty: {
+                    id: missionDifficulty.difficulty.id,
+                    name: missionDifficulty.difficulty.name,
+                    multiplicator: missionDifficulty.difficulty.multiplicator
+                }
+            });
+        }
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -97,15 +131,6 @@ exports.triggerMissionFromEvent = async (req, res) => {
 
         if (!event) {
             return res.status(404).json({ message: 'Aucun événement valide trouvé pour cet utilisateur.' });
-        }
-
-        const currentTime = moment.utc().format("HH:mm:ss");  // Heure actuelle (HH:mm:ss)
-        const startTime = moment.utc(event.start_time, "HH:mm:ss").format("HH:mm:ss"); // Extrait l'heure de start_time
-        const endTime = moment.utc(event.end_time, "HH:mm:ss").format("HH:mm:ss");
-
-
-        if (currentTime < startTime || currentTime > endTime) {
-            return res.status(400).json({ message: "L'événement n'est pas dans la plage horaire." });
         }
 
         let missionType = event_type === 'PENALITY' ? 'penality' : 'quest';
@@ -183,13 +208,21 @@ exports.checkMissionStatus = async (req, res) => {
             // Ajouter les points multipliés par la difficulté
             const pointsEarned = mission.points * difficulty.multiplicator;
             newPoints += pointsEarned;
+
             await user.update({ points: newPoints });
+
+            if (req.droppedItem) {
+                req.body.fk_items = req.droppedItem.id;
+                req.body.fk_user = userId;
+                await addItem(req, res);
+            }
 
             return res.status(200).json({
                 message: 'Mission réussie',
                 status: 'PASSED',
                 pointsEarned,
-                totalPoints: newPoints
+                totalPoints: newPoints,
+                droppedItem: req.droppedItem ? req.droppedItem.name : null
             });
         }
 
@@ -277,10 +310,10 @@ exports.create = async (req, res) => {
             return res.status(400).json({ message: 'Difficulté non trouvée.' });
         }
 
-        const existingMission = await Mission.findOne({ where: { name } });
+        const existingMission = await Mission.findOne({ where: { name, status } });
 
         if (existingMission) {
-            return res.status(400).json({ message: 'Une mission avec ce nom existe déjà.' });
+            return res.status(400).json({ message: 'Une mission avec ce nom et ce statut existe déjà.' });
         }
 
         // Créer une nouvelle mission

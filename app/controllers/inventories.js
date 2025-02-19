@@ -73,10 +73,9 @@ exports.readOwn = async (req, res) => {
  */
 exports.addItem = async (req, res) => {
     try {
-        if (req.auth.userRole === 'User') {
-            return res.status(403).json({ error: "Vous n'avez pas l'autorisation d'ajouter un item à un inventaire." });
-        }
-
+        // if (req.auth.userRole === 'User') {
+        //     return res.status(403).json({ error: "Vous n'avez pas l'autorisation d'ajouter un item à un inventaire." });
+        // }
         const { fk_items, fk_user } = req.body;
         const userId = fk_user;
         
