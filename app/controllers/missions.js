@@ -1,7 +1,11 @@
-const { Mission, UserMission, User, Difficulty, MissionsDifficulty, Event, Defi } = require('../models');
+const { User, UserMission, Mission, Difficulty, Inventorie, Item, InventorieItems } = require('../models');
 const { Op } = require('sequelize');
 const moment = require('moment');
 const { addItem } = require('./inventories');
+const { Event } = require('../models');
+const { MissionsDifficulty } = require('../models');
+
+
 
 exports.assignMissionToUser = async (req, res) => {
     try {
@@ -144,6 +148,7 @@ exports.triggerMissionFromEvent = async (req, res) => {
     }
 };
 
+
 exports.checkMissionStatus = async (req, res) => {
     try {
         const userId = req.auth.userId; // ID de l'utilisateur connecté
@@ -151,21 +156,18 @@ exports.checkMissionStatus = async (req, res) => {
 
         // Récupérer la mission de l'utilisateur avec la mission et la difficulté associées
         const userMission = await UserMission.findByPk(userMissionId, {
-            include: ['mission', 'difficulty'] // Inclure les relations mission et difficulty
+            include: ['mission', 'difficulty']
         });
 
         if (!userMission) {
             return res.status(404).json({ message: 'Mission non trouvée.' });
         }
 
-        // Vérifier que l'utilisateur correspond bien à la mission
         if (userMission.fk_users !== userId) {
-            return res.status(403).json({ message: 'Cette mission n\'appartient pas à l\'utilisateur connecté.' });
+            return res.status(403).json({ message: 'Cette mission ne vous appartient pas.' });
         }
 
-        // Récupérer l'utilisateur pour accéder à ses points
         const user = await User.findByPk(userId);
-
         if (!user) {
             return res.status(404).json({ message: 'Utilisateur non trouvé' });
         }
@@ -174,26 +176,22 @@ exports.checkMissionStatus = async (req, res) => {
         const now = new Date();
         const elapsedTime = (now - new Date(starttime)) / 1000; // Temps écoulé en secondes
 
-        // Si la mission a déjà été vérifiée
         if (status !== null) {
-            return res.status(200).json({ message: 'La mission a déjà été vérifiée.', status });
+            return res.status(200).json({ message: 'Mission déjà vérifiée.', status });
         }
 
-        let newPoints = user.points; // Points de l'utilisateur actuel
+        let newPoints = user.points;
 
-        // Vérifier si la mission est réussie ou échouée en fonction du temps
         if (elapsedTime > mission.limit_time || elapsedTime < mission.minimum_time) {
             await userMission.update({ status: 'FAILED' });
 
-            // Enlever la moitié des points de la mission à l'utilisateur
             newPoints -= Math.floor(mission.points / 2);
             await user.update({ points: newPoints });
 
-            // Vérifier si l'événement est une pénalité et déclencher une nouvelle mission si nécessaire
             if (mission.status !== 'penality') {
                 req.body.event_type = 'PENALITY';
-                await exports.triggerMissionFromEvent(req, res);  // Appel d'une autre fonction pour gérer la pénalité
-                return; // Ici on retourne après avoir appelé `triggerMissionFromEvent`, pour éviter d'envoyer plusieurs réponses.
+                await exports.triggerMissionFromEvent(req, res);
+                return;
             }
 
             return res.status(200).json({
@@ -205,16 +203,38 @@ exports.checkMissionStatus = async (req, res) => {
         } else if (elapsedTime >= mission.minimum_time) {
             await userMission.update({ status: 'PASSED' });
 
-            // Ajouter les points multipliés par la difficulté
             const pointsEarned = mission.points * difficulty.multiplicator;
             newPoints += pointsEarned;
 
             await user.update({ points: newPoints });
 
+            let droppedItemMessage = null;
+
             if (req.droppedItem) {
-                req.body.fk_items = req.droppedItem.id;
-                req.body.fk_user = userId;
-                await addItem(req, res);
+                const droppedItem = req.droppedItem;
+                const fk_items = droppedItem.id;
+
+                // Ajouter l'item à l'inventaire de l'utilisateur
+                let inventory = await Inventorie.findOne({ where: { fk_user: userId } });
+                if (!inventory) {
+                    inventory = await Inventorie.create({ fk_user: userId });
+                }
+
+                let inventoryItem = await InventorieItems.findOne({
+                    where: {
+                        fk_inventory: inventory.id,
+                        fk_item: fk_items
+                    }
+                });
+
+                if (inventoryItem) {
+                    inventoryItem.quantity += 1;
+                    await inventoryItem.save();
+                    droppedItemMessage = `Quantité de l'item '${droppedItem.name}' mise à jour.`;
+                } else {
+                    await inventory.addItem(droppedItem);
+                    droppedItemMessage = `Item '${droppedItem.name}' ajouté à l'inventaire.`;
+                }
             }
 
             return res.status(200).json({
@@ -222,7 +242,8 @@ exports.checkMissionStatus = async (req, res) => {
                 status: 'PASSED',
                 pointsEarned,
                 totalPoints: newPoints,
-                droppedItem: req.droppedItem ? req.droppedItem.name : null
+                droppedItem: req.droppedItem ? req.droppedItem.name : null,
+                inventoryUpdate: droppedItemMessage
             });
         }
 
@@ -231,6 +252,7 @@ exports.checkMissionStatus = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
 
 exports.logsUserMission = async (req, res) => {
     try {
