@@ -14,7 +14,6 @@ module.exports = (sequelize, DataTypes) => {
         code_defi: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique: false,
             validate: {
                 notEmpty: { msg: 'Le code du défi est obligatoire.' }
             }
@@ -42,7 +41,13 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         sequelize,
         modelName: 'Defi',
-        tableName: 'defis'
+        tableName: 'defis',
+        indexes: [
+            {
+                fields: ['code_defi'], // Création d'un index non unique
+                unique: false
+            }
+        ]
     });
 
     return Defi;
