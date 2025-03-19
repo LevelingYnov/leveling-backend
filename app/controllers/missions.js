@@ -188,6 +188,8 @@ exports.checkMissionStatus = async (req, res) => {
             newPoints -= Math.floor(mission.points / 2);
             await user.update({ points: newPoints });
 
+            await require('./inventories').deleteUserInventoryIfNoPoints(userId);
+
             if (mission.status !== 'penality') {
                 req.body.event_type = 'PENALITY';
                 await exports.triggerMissionFromEvent(req, res);

@@ -151,6 +151,7 @@ exports.checkDefiUsers = async (req, res) => {
             const loserUser = await User.findByPk(loserId);
             if (loserUser) {
                 await loserUser.update({ points: Math.max(0, loserUser.points - Math.floor(mission.points / 2)) });
+                await require('./inventories').deleteUserInventoryIfNoPoints(loserId);
             }
 
             return res.status(200).json({
