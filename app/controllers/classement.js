@@ -36,7 +36,7 @@ exports.readAll = async (req, res) => {
         const classements = await Classement.findAll({
             include: {
                 model: User,
-                attributes: ['id', 'username', 'points'],
+                attributes: ['id', 'username', 'points', 'avatar'],
                 as: 'user'
             },
             order: [['number', 'ASC']]
@@ -61,7 +61,7 @@ exports.read = async (req, res) => {
             where: { fk_user: id },
             include: {
                 model: User,
-                attributes: ['id', 'username', 'points'],
+                attributes: ['id', 'username', 'points', 'avatar'],
                 as: 'user'
             }
         });
