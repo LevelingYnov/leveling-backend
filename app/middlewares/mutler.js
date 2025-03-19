@@ -55,9 +55,10 @@ const storage = multer.diskStorage({
      * @param {Function} callback - La fonction de rappel pour indiquer le nom de fichier.
      */
     filename: (req, file, callback) => {
-        const name = file.originalname.split(" ").join("_").split(".")[0]
-        const extension = MIME_TYPES[file.mimetype]
-        callback(null, name + "_" + Date.now() + "." + extension);
+        const extension = MIME_TYPES[file.mimetype];
+        const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1E9)}.${extension}`;
+        callback(null, uniqueName);
+
     },
 });
 

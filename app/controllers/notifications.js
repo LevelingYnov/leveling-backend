@@ -3,10 +3,17 @@ const { Notification } = require('../models');
 // Lire une notification par ID
 exports.read = async (req, res) => {
     try {
+        const userId = req.auth.userId;
         const notification = await Notification.findByPk(req.params.id);
+        
         if (!notification) {
             return res.status(404).json({ error: "Notification non trouvée" });
         }
+        
+        if (notification.user_id !== userId) {
+            return res.status(403).json({ error: "Accès refusé : Cette notification ne vous appartient pas" });
+        }
+        
         res.status(200).json(notification);
     } catch (error) {
         console.error(error);
