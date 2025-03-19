@@ -41,7 +41,8 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         sequelize,
         modelName: 'Notification',
-        tableName: 'notifications'
+        tableName: 'notifications',
+        timestamps: false
     });
 
     return Notification;
