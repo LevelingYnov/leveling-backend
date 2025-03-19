@@ -1,5 +1,7 @@
 const { User } = require('../models');
 const bcrypt = require('bcrypt');
+const path = require('path')
+const fs = require('fs');
 
 /**
  * @module UserController
@@ -222,19 +224,28 @@ exports.update = async (req, res) => {
  * @param {Object} res - La réponse HTTP.
  * @throws {Error} En cas d'erreur lors de la suppression de l'utilisateur.
  */
+
 exports.delete = async (req, res) => {
     try {
-        const userId = req.auth.userId;// Récupérer l'ID de l'utilisateur depuis les paramètres JWT
+        const userId = req.auth.userId;
 
         if (!userId) {
             return res.status(400).json({ message: "User ID is required." });
         }
 
-        // Trouver l'utilisateur par ID
         const user = await User.findOne({ where: { id: userId } });
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
+        }
+
+        // Supprimer l'avatar si l'utilisateur en a un
+        if (user.avatar) {
+            const avatarPath = path.join(__dirname, '../../uploads/profiles/avatars', path.basename(user.avatar));
+            
+            if (fs.existsSync(avatarPath)) {
+                fs.unlinkSync(avatarPath); // Supprime l'avatar du serveur
+            }
         }
 
         res.clearCookie('token', {
@@ -243,10 +254,9 @@ exports.delete = async (req, res) => {
             sameSite: 'Strict',
         });
 
-        // Supprimer l'utilisateur
         await user.destroy();
 
-        res.status(200).json({ message: "User deleted successfully" });
+        res.status(200).json({ message: "User deleted successfully, avatar removed." });
     } catch (error) {
         res.status(500).json({
             message: error.message || 'Une erreur est survenue lors de la suppression du compte.'

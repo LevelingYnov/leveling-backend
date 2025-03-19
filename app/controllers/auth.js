@@ -2,29 +2,49 @@ const { User, Token } = require('../models');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
-// const fs = require('fs');
-// const path = require('path')
+const fs = require('fs');
+const path = require('path')
 const CryptoJS = require('crypto-js');
 const env = process.env.NODE_ENV || 'development';
 
 exports.signup = async (req, res) => {
-  try {
-      const user = await User.create({
-          ...req.body
-      });
-    
-      res.status(201).json(user);
+    try {
+        // Créer un utilisateur avec les données de la requête
+        const user = await User.create({
+            ...req.body
+        });
+
+        // Vérifier si un avatar a été généré
+        if (req.avatarData) {
+            const { circleColor, pathColor, uniqueAvatarName } = req.avatarData;
+            
+            // Lire le modèle de base de l'avatar
+            const defaultAvatarPath = path.join(__dirname, '../../uploads/profiles/default/default_avatar.svg');
+            const userAvatarPath = path.join(__dirname, '../../uploads/profiles/avatars', uniqueAvatarName);
+
+            let svgContent = fs.readFileSync(defaultAvatarPath, 'utf8');
+
+            // Modifier le SVG avec les nouvelles couleurs
+            svgContent = svgContent.replace(/<rect[^>]*fill="[^"]*"[^>]*>/, `<rect width="720" height="720" rx="100" fill="${circleColor}"/>`);
+            svgContent = svgContent.replace(/<path[^>]*fill="[^"]*"[^>]*>/, `<path d="M261.132 485.558L176 381.616L185.199 286.919L340.495 158.714C340.495 158.714 366.378 137.322 360.329 77L433.702 204.943L256.682 351.085L277.349 355.543L322.067 410.142L261.132 485.549V485.558Z" fill="${pathColor}"/>`);
+
+            // Enregistrer le SVG modifié
+            fs.writeFileSync(userAvatarPath, svgContent);
+
+            // Ajouter le chemin de l'avatar à l'utilisateur
+            user.avatar = `${req.protocol}://${req.get("host")}/uploads/profiles/avatars/${uniqueAvatarName}`;
+            await user.save();
+        }
+
+        res.status(201).json(user);
     } catch (error) {
-      // Gestion des erreurs Sequelize
-      if (error.name === "SequelizeValidationError") {
-        const messages = error.errors.map((err) => err.message);
-        return res.status(400).json({ message: messages });
-      }
-  
-      console.error(error);
-      res.status(500).json({
-        message: "Erreur interne lors de la création de l'utilisateur.",
-      });
+        if (error.name === "SequelizeValidationError") {
+            const messages = error.errors.map((err) => err.message);
+            return res.status(400).json({ message: messages });
+        }
+        res.status(500).json({
+            message: "Erreur interne lors de la création de l'utilisateur.",
+        });
     }
 };
 

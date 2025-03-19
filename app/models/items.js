@@ -27,7 +27,8 @@ module.exports = (sequelize, DataTypes) => {
                 notNull: { msg: 'Le bonus est obligatoire.' },
                 isInt: { msg: 'Le bonus doit être un entier.' }
             }
-        }
+        },
+        image: DataTypes.STRING,
     }, {
         sequelize,
         modelName: 'Item',

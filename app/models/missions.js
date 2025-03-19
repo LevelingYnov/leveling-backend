@@ -37,7 +37,8 @@ module.exports = (sequelize, DataTypes) => {
         minimum_time: {
             type: DataTypes.INTEGER,
             allowNull: false
-        }
+        },
+        image: DataTypes.STRING
     }, {
         sequelize,
         modelName: 'Mission',
