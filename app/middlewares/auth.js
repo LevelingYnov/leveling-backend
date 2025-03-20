@@ -22,10 +22,7 @@ module.exports = async (req, res, next) => {
         const storedToken = await Token.findOne({
             where: {
                 user_id: decodedToken.userId,
-                access_token: token,
-                avatar: decodedToken.avatar, 
-                username: decodedToken.username,
-                points: decodedToken.points
+                access_token: token
             },
         });
 
@@ -36,10 +33,7 @@ module.exports = async (req, res, next) => {
         // Ajouter les infos d'authentification à la requête
         req.auth = {
             userId: decodedToken.userId,
-            userRole: decodedToken.userRole,
-            avatar: decodedToken.avatar, 
-            username: decodedToken.username,
-            points: decodedToken.points,
+            userRole: decodedToken.userRole
         };
 
         next(); // Continuer vers le middleware suivant ou le contrôleur
