@@ -81,9 +81,9 @@ exports.login = async (req, res) => {
 
         // Générer les tokens
         const accessToken = jwt.sign(
-            { userId: user.id, userRole: user.role },
+            { userId: user.id, userRole: user.role, avatar: user.avatar, username: user.username, points: user.points },
             process.env.JWT_SECRET,
-            { expiresIn: '10h' }
+            { expiresIn: '1h' }
         );
 
         const refreshToken = jwt.sign(
@@ -109,6 +109,9 @@ exports.login = async (req, res) => {
 
         await Token.create({
             user_id: user.id,
+            avatar: user.avatar,
+            username: user.username,
+            points: user.points,
             access_token: accessToken,
             refresh_token: refreshToken,
             access_token_expires_at: new Date(Date.now() + 10 * 60 * 60 * 1000),

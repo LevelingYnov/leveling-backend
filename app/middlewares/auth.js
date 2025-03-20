@@ -17,12 +17,15 @@ module.exports = async (req, res, next) => {
 
         // Vérifier et décoder le token
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-
+        
         // Vérifier si le token est valide dans la base de données
         const storedToken = await Token.findOne({
             where: {
                 user_id: decodedToken.userId,
                 access_token: token,
+                avatar: decodedToken.avatar, 
+                username: decodedToken.username,
+                points: decodedToken.points
             },
         });
 
@@ -34,6 +37,9 @@ module.exports = async (req, res, next) => {
         req.auth = {
             userId: decodedToken.userId,
             userRole: decodedToken.userRole,
+            avatar: decodedToken.avatar, 
+            username: decodedToken.username,
+            points: decodedToken.points,
         };
 
         next(); // Continuer vers le middleware suivant ou le contrôleur
