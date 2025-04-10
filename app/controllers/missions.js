@@ -5,8 +5,6 @@ const { addItem } = require('./inventories');
 const { Event } = require('../models');
 const { MissionsDifficulty } = require('../models');
 
-
-
 exports.assignMissionToUser = async (req, res) => {
     try {
         const userId = req.auth.userId;
@@ -25,10 +23,6 @@ exports.assignMissionToUser = async (req, res) => {
             }
         });
 
-        if (existingMission) {
-            return res.status(400).json({ message: 'Une mission est déjà en cours.' });
-        }
-
         let mission;
         let defi;
 
@@ -39,7 +33,10 @@ exports.assignMissionToUser = async (req, res) => {
             }
             mission = await Mission.findByPk(defi.fk_mission);
         } else {
-            // Missions normales
+            if (existingMission) {
+                return res.status(400).json({ message: 'Une mission est déjà en cours.' });
+            }
+
             const missions = await Mission.findAll({
                 where: {
                     status: missionType,

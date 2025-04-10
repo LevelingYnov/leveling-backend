@@ -57,6 +57,24 @@ exports.create = async (req, res) => {
 
         await existingDefi.update({ status: 'ACTIVE' });
 
+        if (existingDefi.fk_user1 && existingDefi.fk_user2) {
+            // Création des missions pour les deux utilisateurs
+            await UserMission.create({
+                fk_users: existingDefi.fk_user1,
+                fk_missions: existingDefi.fk_mission,
+                fk_difficulty: 1, // Ou une valeur dynamique selon ton système
+                starttime: new Date(),
+                status: null
+            });
+        
+            await UserMission.create({
+                fk_users: existingDefi.fk_user2,
+                fk_missions: existingDefi.fk_mission,
+                fk_difficulty: 1,
+                starttime: new Date(),
+                status: null
+            });
+        }        
         await assignMissionToUser(req, res);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -98,6 +116,9 @@ exports.checkDefiUsers = async (req, res) => {
         if (![defi.fk_user1, defi.fk_user2].includes(userId)) {
             return res.status(403).json({ message: 'Accès interdit : vous ne faites pas partie de ce défi.' });
         }
+
+        console.log(userId)
+        console.log(userMissionId)
 
         const userMission = await UserMission.findOne({
             where: { fk_missions: userMissionId, fk_users: userId },
