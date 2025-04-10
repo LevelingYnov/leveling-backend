@@ -172,7 +172,7 @@ exports.checkDefiUsers = async (req, res) => {
             const loserUser = await User.findByPk(loserId);
             if (loserUser) {
                 await loserUser.update({ points: Math.max(0, loserUser.points - Math.floor(mission.points / 2)) });
-                await require('./inventories').deleteUserInventoryIfNoPoints(loserId);
+                const inventoryDeletionMessage = await require('./inventories').deleteUserInventoryIfNoPoints(loserId);
             }
 
             return res.status(200).json({
@@ -187,7 +187,8 @@ exports.checkDefiUsers = async (req, res) => {
             return res.status(200).json({
                 message: 'Vous avez perdu le défi.',
                 status: 'FAILED',
-                totalPoints: newPoints
+                totalPoints: newPoints,
+                inventoryUpdate: inventoryDeletionMessage
             });
         }
 

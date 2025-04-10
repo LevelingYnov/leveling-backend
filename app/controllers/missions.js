@@ -185,7 +185,7 @@ exports.checkMissionStatus = async (req, res) => {
             newPoints -= Math.floor(mission.points / 2);
             await user.update({ points: newPoints });
 
-            await require('./inventories').deleteUserInventoryIfNoPoints(userId);
+            const inventoryDeletionMessage = await require('./inventories').deleteUserInventoryIfNoPoints(userId);
 
             if (mission.status !== 'penality') {
                 req.body.event_type = 'PENALITY';
@@ -197,7 +197,8 @@ exports.checkMissionStatus = async (req, res) => {
                 message: 'Mission échouée',
                 status: 'FAILED',
                 pointsLost: Math.floor(mission.points / 2),
-                totalPoints: newPoints
+                totalPoints: newPoints,
+                inventoryUpdate: inventoryDeletionMessage
             });
         } else if (elapsedTime >= mission.minimum_time) {
             await userMission.update({ status: 'PASSED' });

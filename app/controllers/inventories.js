@@ -168,17 +168,21 @@ exports.removeItem = async (req, res) => {
 exports.deleteUserInventoryIfNoPoints = async (userId) => {
     try {
         const user = await User.findByPk(userId);
-        if (!user) return;
+        if (!user) return null;
 
         if (user.points <= 7) {
             const inventory = await Inventorie.findOne({ where: { fk_user: userId } });
 
             if (inventory) {
-                await inventory.destroy(); // Supprime l'inventaire de l'utilisateur
-                console.log(`L'inventaire de l'utilisateur ${userId} a été supprimé car il n'a plus de points.`);
+                await inventory.destroy();
+                const message = `L'inventaire de l'utilisateur ${userId} a été supprimé car il n'a plus de points.`;
+                return message;
             }
         }
+
+        return null;
     } catch (error) {
-        console.error('Erreur lors de la suppression de l\'inventaire :', error);
+        console.error("Erreur lors de la suppression de l'inventaire :", error);
+        return null;
     }
 };
