@@ -1,4 +1,4 @@
-const { User, UserMission, Mission, Difficulty, Inventorie, Item, InventorieItems } = require('../models');
+const { User, UserMission, Mission, Difficulty, Inventorie, Item, InventorieItems, Defi } = require('../models');
 const { Op } = require('sequelize');
 const moment = require('moment');
 const { addItem } = require('./inventories');
@@ -28,6 +28,7 @@ exports.assignMissionToUser = async (req, res) => {
 
         if (missionType === "defi") {
             defi = await Defi.findByPk(defiId);
+ 
             if (!defi) {
                 return res.status(404).json({ message: "Défi introuvable" });
             }

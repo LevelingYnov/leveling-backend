@@ -44,7 +44,7 @@ module.exports = (sequelize, DataTypes) => {
         tableName: 'defis',
         indexes: [
             {
-                fields: ['code_defi'], // Création d'un index non unique
+                fields: ['code_defi'],
                 unique: false
             }
         ]
