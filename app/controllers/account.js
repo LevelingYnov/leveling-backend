@@ -131,6 +131,7 @@ exports.update = async (req, res) => {
         }
 
         let newAvatarPath = user.avatar;
+        
         // Vérifier si l'avatar doit être supprimé
         if (datas.avatar === "delete") { 
             // Supprimer l'ancien avatar
@@ -161,16 +162,10 @@ exports.update = async (req, res) => {
                
                 // Mettre à jour l'avatar de l'utilisateur dans la base de données
                 newAvatarPath = `${req.protocol}://${req.get("host")}/uploads/profiles/avatars/${uniqueAvatarName}`;
+            } else {
+                // Si aucune donnée d'avatar n'est fournie, réinitialiser à null
+                newAvatarPath = null;
             }
-        } else if (datas.avatar === "delete") {
-            // Supprimer l'ancien avatar
-            if (user.avatar) {
-                const oldAvatarPath = path.join(__dirname, '../../uploads/profiles/avatars', path.basename(user.avatar));
-                if (fs.existsSync(oldAvatarPath)) {
-                    fs.unlinkSync(oldAvatarPath);
-                }
-            }
-            newAvatarPath = null; // Réinitialiser à l'avatar par défaut
         } else if (req.file) {
             newAvatarPath = `${req.protocol}://${req.get("host")}/uploads/profiles/avatars/${req.file.filename}`;
         
@@ -183,7 +178,6 @@ exports.update = async (req, res) => {
             }
         }
         
-
         // Mise à jour des informations de l'utilisateur
         if (username) {
             // Valider le username
