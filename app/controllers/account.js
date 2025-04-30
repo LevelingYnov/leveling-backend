@@ -163,8 +163,8 @@ exports.update = async (req, res) => {
                 // Mettre à jour l'avatar de l'utilisateur dans la base de données
                 newAvatarPath = `${req.protocol}://${req.get("host")}/uploads/profiles/avatars/${uniqueAvatarName}`;
             } else {
-                // Si aucune donnée d'avatar n'est fournie, réinitialiser à null
-                newAvatarPath = null;
+                // Si aucune donnée d'avatar n'est fournie, utiliser l'avatar par défaut
+                newAvatarPath = `${req.protocol}://${req.get("host")}/uploads/profiles/default/default_avatar.svg`;
             }
         } else if (req.file) {
             newAvatarPath = `${req.protocol}://${req.get("host")}/uploads/profiles/avatars/${req.file.filename}`;
