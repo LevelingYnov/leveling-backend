@@ -6,6 +6,7 @@ const rateLimit = require('express-rate-limit');
 const slowDown = require('express-slow-down'); 
 const helmet = require('helmet');
 const router = require("./app/routes/index.js");
+const path = require('path');
 const db = require("./app/models/index.js");
 const env = process.env.NODE_ENV || 'development';
 
@@ -101,6 +102,8 @@ app.use(cors({
 }));
 
 app.use(cookieParser());
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.set('trust proxy', true);
 
