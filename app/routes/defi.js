@@ -6,9 +6,9 @@ const authMiddleware = require('../middlewares/auth.js');
 /**
  * Routes pour gérer les defis.
  */
-router.get('/:id', authMiddleware, defiCtrl.read);
+router.get('/getLastUserDefi', authMiddleware, defiCtrl.getLastUserDefi);
 router.post('/', authMiddleware, defiCtrl.create);
-router.put('/:id', authMiddleware, defiCtrl.update);
+router.get('/', authMiddleware, defiCtrl.actif);
 router.delete('/:id', authMiddleware, defiCtrl.delete);
 
 module.exports = router;

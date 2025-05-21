@@ -1,5 +1,6 @@
 const { Defi, User, Mission, UserMission } = require("../models");
 const { Sequelize } = require("sequelize");
+const { Op } = require("sequelize");
 const { assignMissionToUser } = require("./missions");
 
 exports.create = async (req, res) => {
@@ -10,13 +11,14 @@ exports.create = async (req, res) => {
     const existingUserDefi = await Defi.findOne({
       where: {
         fk_user1: fk_user1,
-        status: { [Sequelize.Op.ne]: "FINISHED" }
-      }
+        status: { [Sequelize.Op.ne]: "FINISHED" },
+      },
     });
 
     if (existingUserDefi && existingUserDefi.code_defi !== code_defi) {
       return res.status(400).json({
-        message: "Vous avez déjà un défi en cours. Terminez-le avant d'en créer un nouveau."
+        message:
+          "Vous avez déjà un défi en cours. Terminez-le avant d'en créer un nouveau.",
       });
     }
 
@@ -59,7 +61,9 @@ exports.create = async (req, res) => {
 
     // Vérifier si le défi est déjà complet
     if (existingDefi.fk_user2) {
-      return res.status(400).json({ message: "Ce défi est déjà complet." });
+      return res.status(400).json({
+        message: "Ce défi est déjà complet.",
+      });
     }
 
     // Vérifier que user1 ≠ user2
@@ -81,33 +85,35 @@ exports.create = async (req, res) => {
     await assignMissionToUser(req, res);
   } catch (error) {
     console.error("Erreur lors de la création du défi :", error);
-  if (error.name === 'SequelizeValidationError') {
-    return res.status(400).json({
-      error: 'Validation error',
-      details: error.errors.map(e => e.message),
-    });
-  }
-  res.status(500).json({ error: error.message });
+    if (error.name === "SequelizeValidationError") {
+      return res.status(400).json({
+        error: "Validation error",
+        details: error.errors.map((e) => e.message),
+      });
+    }
+    res.status(500).json({ error: error.message });
   }
 };
 
-exports.read = async (req, res) => {
+exports.getLastUserDefi = async (req, res) => {
   try {
-    const { id } = req.params;
-    const defi = await Defi.findByPk(id, {
-      include: [
-        { model: User, as: "user1", attributes: ["id", "username"] },
-        { model: User, as: "user2", attributes: ["id", "username"] },
-        { model: Mission, as: "mission", attributes: ["id", "name"] },
-      ],
+    const userId = req.auth.userId;
+
+    let defi = await Defi.findOne({
+      where: {
+        [Op.or]: [{ fk_user1: userId }, { fk_user2: userId }],
+      },
+      order: [["createdAt", "DESC"]],
+      include: ["mission"],
     });
 
     if (!defi) {
-      return res.status(404).json({ message: "Défi non trouvé." });
+      return res.status(404).json({ message: "Aucun défi trouvé." });
     }
 
     res.status(200).json(defi);
   } catch (error) {
+    console.error("Erreur lors de la récupération du dernier défi de l'utilisateur :", error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -124,11 +130,9 @@ exports.checkDefiUsers = async (req, res) => {
     }
 
     if (![defi.fk_user1, defi.fk_user2].includes(userId)) {
-      return res
-        .status(403)
-        .json({
-          message: "Accès interdit : vous ne faites pas partie de ce défi.",
-        });
+      return res.status(403).json({
+        message: "Accès interdit : vous ne faites pas partie de ce défi.",
+      });
     }
 
     const userMission = await UserMission.findOne({
@@ -176,18 +180,18 @@ exports.checkDefiUsers = async (req, res) => {
       const winnerMission = await UserMission.findOne({
         where: {
           fk_users: userId,
-          fk_missions: defi.fk_mission
+          fk_missions: defi.fk_mission,
         },
-        order: [['id', 'DESC']] 
-      });      
+        order: [["id", "DESC"]],
+      });
 
       const loserMission = await UserMission.findOne({
         where: {
           fk_users: loserId,
-          fk_missions: userMissionId
+          fk_missions: userMissionId,
         },
-        order: [['id', 'DESC']]
-      }); 
+        order: [["id", "DESC"]],
+      });
 
       if (winnerMission) {
         winnerMission.status = "PASSED";
@@ -217,6 +221,7 @@ exports.checkDefiUsers = async (req, res) => {
         message: "Vous avez gagné le défi !",
         status: "PASSED",
         totalPoints: newPoints,
+        defi: defi
       });
     }
   } catch (error) {
@@ -225,29 +230,53 @@ exports.checkDefiUsers = async (req, res) => {
   }
 };
 
-exports.update = async (req, res) => {
+exports.actif = async (req, res) => {
   try {
-    const { id } = req.params;
     const userId = req.auth.userId;
 
-    // Vérifier que le défi existe
-    const defi = await Defi.findByPk(id);
+    let defi = await Defi.findOne({
+      where: {
+        winner: null,
+        [Op.or]: [{ fk_user1: userId }, { fk_user2: userId }],
+        status: {
+          [Op.ne]: "FINISHED",
+        },
+      },
+      order: [["createdAt", "DESC"]],
+      include: ["mission"],
+    });
+
     if (!defi) {
-      return res.status(404).json({ message: "Défi non trouvé." });
+      console.log("Aucun défi actif trouvé, recherche du dernier terminé...");
+      defi = await Defi.findOne({
+        where: {
+          winner: {
+            [Op.ne]: null,
+          },
+          [Op.or]: [{ fk_user1: userId }, { fk_user2: userId }],
+          status: "FINISHED",
+        },
+        order: [["createdAt", "DESC"]],
+        include: ["mission"],
+      });
+
+      if (!defi) {
+        return res.status(404).json({ message: "Aucun défi trouvé." });
+      }
     }
 
-    // Vérifier que le gagnant est bien l'un des deux joueurs
     if (![defi.fk_user1, defi.fk_user2].includes(userId)) {
       return res.status(400).json({
         message: "Le joueur doit être l'un des deux utilisateurs du défi.",
       });
     }
 
-    req.body.defiId = id;
+    req.body.defiId = defi.id;
     req.body.userMissionId = defi.fk_mission;
 
     await exports.checkDefiUsers(req, res);
   } catch (error) {
+    console.error("❌ Erreur dans actif :", error);
     res.status(500).json({ error: error.message });
   }
 };

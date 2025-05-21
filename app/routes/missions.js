@@ -12,7 +12,7 @@ const missionsCtrl = require("../controllers/missions.js");
  */
 router.post("/trigger", authMiddleware, missionsCtrl.triggerMissionFromEvent);
 router.post('/assign', authMiddleware, missionsCtrl.assignMissionToUser);
-router.get('/status/:id', authMiddleware, getRandomItemMiddleware, missionsCtrl.checkMissionStatus);
+router.post('/status', authMiddleware, getRandomItemMiddleware, missionsCtrl.checkMissionStatus);
 router.get("/logs", authMiddleware, missionsCtrl.logsUserMission);
 
 // /**
